@@ -95,10 +95,7 @@ def MapFlights(aircrafts):
 
         file.write(f""" <Placemark> <name>{a.aircraft_id}</name> <LineString> <coordinates> {origin[1]},{origin[0]},0 {lebl[1]},{lebl[0]},0 </coordinates> </LineString> </Placemark> """)
 
-    file.write("""
-</Document>
-</kml>
-""")
+    file.write(""" </Document> </kml> """)
 
     file.close()
 
