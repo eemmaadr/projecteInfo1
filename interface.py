@@ -9,7 +9,7 @@ class AirportApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Gestor Aeroports")
-        self.root.geometry("350x500")  # Movido aquí para que funcione
+        self.root.geometry("350x500")  
 
         self.airports = []
         self.vuelos = []
@@ -52,7 +52,7 @@ class AirportApp:
     def load_arrivals_v2(self):
         f = filedialog.askopenfilename()
         if f:
-            self.vuelos = ac.LoadArrivals(f)  # Llama a tu función en aircraft.py
+            self.vuelos = ac.LoadArrivals(f)
             messagebox.showinfo("Info", f"Carregats {len(self.vuelos)} vols!")
 
     def plot_hours_v2(self):

@@ -76,35 +76,7 @@ def LongDistanceArrivals(aircrafts):
     return res
 
 
-def PlotArrivals(aircrafts):
-    horas = [int(a.scheduled_time.split(':')[0]) for a in aircrafts]
-    plt.figure("Histograma de Llegadas")
-    plt.hist(horas, bins=range(25), edgecolor='black', color='skyblue')
-    plt.title("Vuelos llegados por franja horaria")
-    plt.xlabel("Hora del día")
-    plt.ylabel("Cantidad de vuelos")
-    plt.show()
 
-
-def PlotAirlines(aircrafts):
-    counts = {}
-    for a in aircrafts:
-        counts[a.airline] = counts.get(a.airline, 0) + 1
-    plt.figure("Vuelos por Aerolínea")
-    plt.bar(counts.keys(), counts.values(), color='orange')
-    plt.title("Distribución por Compañía")
-    plt.show()
-
-
-def PlotFlightsType(aircrafts):
-    sch = sum(1 for a in aircrafts if IsSchengenAirport(a.origin))
-    no_sch = len(aircrafts) - sch
-    plt.figure("Schengen vs No-Schengen")
-    plt.bar(['Vuelos'], [sch], label='Schengen', color='green')
-    plt.bar(['Vuelos'], [no_sch], bottom=[sch], label='No-Schengen', color='red')
-    plt.title("Tipo de procedencia (Apilado)")
-    plt.legend()
-    plt.show()
 
 
 def MapFlights(aircrafts, filename):
