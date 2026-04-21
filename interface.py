@@ -9,7 +9,7 @@ class AirportApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Gestor Aeroports")
-        self.root.geometry("350x500")  
+        self.root.geometry("350x500")
 
         self.airports = []
         self.vuelos = []
@@ -19,7 +19,7 @@ class AirportApp:
         tk.Button(root, text="Carregar Airports.txt", command=self.load).pack(fill='x', padx=20)
         tk.Button(root, text="Actualitzar Schengen", command=self.apply_schengen).pack(fill='x', padx=20)
         tk.Button(root, text="MOSTRAR GRÀFIC SCHENGEN", command=self.draw_plot).pack(fill='x', padx=20)
-
+        tk.Button(root, text="Google Earth", command=self.make_map).pack()
 
         tk.Label(root, text="VERSIÓN 2: VUELOS", fg="green").pack(pady=(10, 0))
         tk.Button(root, text="Carregar Arrivals.txt", command=self.load_arrivals_v2).pack(fill='x', padx=20)
@@ -39,14 +39,26 @@ class AirportApp:
 
     def draw_plot(self):
         if not self.airports: return
-        s_count = sum(1 for a in self.airports if a.Schengen)
-        ns_count = len(self.airports) - s_count
+
+        s_count = 0
+        ns_count = 0
+        for a in self.airports:
+            if a.Schengen:
+                s_count += 1
+            else:
+                ns_count += 1
+
         pyplot.figure("Estadístiques Schengen")
         pyplot.bar(['Airports'], [s_count], color='blue', label='Schengen')
         pyplot.bar(['Airports'], [ns_count], bottom=[s_count], color='red', label='No Schengen')
-        pyplot.legend();
+        pyplot.ylabel('Quantitat')
+        pyplot.title('Aeroports Schengen vs No Schengen')
+        pyplot.legend()
         pyplot.show()
 
+    def make_map(self):
+        MapAirports(self.airports)
+        messagebox.showinfo("KML", "Fitxer creat!")
 
 
     def load_arrivals_v2(self):
