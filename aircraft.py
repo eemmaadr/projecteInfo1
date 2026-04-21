@@ -12,10 +12,10 @@ class Aircraft:
         self.scheduled_time = scheduled_time
 
 
-def LoadArrivals(filename):
-    arrivals = []
+def LoadArrivals(Arrivals):
+    arrivalsList = []
     try:
-        with open(filename, "r") as file:
+        with open(Arrivals, "r") as file:
             next(file)
             for line in file:
                 parts = line.strip().split()
@@ -28,10 +28,10 @@ def LoadArrivals(filename):
                     if not (0 <= h <= 23 and 0 <= m <= 59): continue
                 except:
                     continue
-                arrivals.append(Aircraft(parts[0], parts[3], parts[1], parts[2]))
+                arrivalsList.append(Aircraft(parts[0], parts[3], parts[1], parts[2]))
     except FileNotFoundError:
         print("Archivo no encontrado")
-    return arrivals
+    return arrivalsList
 
 def PlotArrivals(aircrafts):
     if len(aircrafts) == 0:

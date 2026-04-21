@@ -62,10 +62,8 @@ class AirportApp:
 
 
     def load_arrivals_v2(self):
-        f = filedialog.askopenfilename()
-        if f:
-            self.vuelos = ac.LoadArrivals(f)
-            messagebox.showinfo("Info", f"Carregats {len(self.vuelos)} vols!")
+        self.vuelos = ac.LoadArrivals("Arrivals.txt")
+        messagebox.showinfo("Info", "Arrivals actualitzat!")
 
     def PlotArrivals(self):
         if self.vuelos: ac.PlotArrivals(self.vuelos)
