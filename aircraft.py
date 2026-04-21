@@ -43,7 +43,7 @@ def PlotArrivals(aircrafts):
     while i < len(aircrafts):
         vol = aircraft[i]
         arrivada = vol.scheduled_time.split(":")
-        hora = int(arrivada)
+        hora = int(arrivada[0])
 
         if 0 <= hora < 24:
             hores_dia[hora] += 1
@@ -65,7 +65,7 @@ def PlotAirlines(aircrafts):
     vols = []
     i = 0
     while i < len(aircrafts):
-        actual = aircrafts[i].aircraft_id
+        actual = aircrafts[i].airline
         found = False
         j = 0
         while j < len(aerolinia) and not found:

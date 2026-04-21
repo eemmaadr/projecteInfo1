@@ -23,9 +23,9 @@ class AirportApp:
 
         tk.Label(root, text="VERSIÓN 2: VUELOS", fg="green").pack(pady=(10, 0))
         tk.Button(root, text="Carregar Arrivals.txt", command=self.load_arrivals_v2).pack(fill='x', padx=20)
-        tk.Button(root, text="Gràfic Arribades (Hores)", command=self.plot_hours_v2).pack(fill='x', padx=20)
-        tk.Button(root, text="Gràfic Aerolínies", command=self.plot_airlines_v2).pack(fill='x', padx=20)
-        tk.Button(root, text="Gràfic Schengen (Apilat)", command=self.plot_schengen_v2).pack(fill='x', padx=20)
+        tk.Button(root, text="Gràfic Arribades (Hores)", command=self.PlotArrivals).pack(fill='x', padx=20)
+        tk.Button(root, text="Gràfic Aerolínies", command=self.PlotAirlines).pack(fill='x', padx=20)
+        tk.Button(root, text="Gràfic Schengen (Apilat)", command=self.PlotFlightsType).pack(fill='x', padx=20)
         tk.Button(root, text="Google Earth (Tots)", command=self.make_map_v2).pack(fill='x', padx=20)
         tk.Button(root, text="Google Earth (Llarga Distància)", command=self.make_map_long_v2).pack(fill='x', padx=20)
 
@@ -65,13 +65,13 @@ class AirportApp:
         self.vuelos = ac.LoadArrivals("Arrivals.txt")
         messagebox.showinfo("Info", "Arrivals actualitzat!")
 
-    def plot_hours_v2(self):
+    def PlotArrivals(self):
         if self.vuelos: ac.PlotArrivals(self.vuelos)
 
-    def plot_airlines_v2(self):
+    def PlotAirlines(self):
         if self.vuelos: ac.PlotAirlines(self.vuelos)
 
-    def plot_schengen_v2(self):
+    def PlotFlightsType(self):
         if self.vuelos: ac.PlotFlightsType(self.vuelos)
 
     def make_map_v2(self):
