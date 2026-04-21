@@ -16,12 +16,12 @@ def LoadArrivals(filename):
     arrivals = []
     try:
         with open(filename, "r") as file:
-            next(file)
+            next(file)  # Saltar cabecera
             for line in file:
                 parts = line.strip().split()
                 if len(parts) != 4: continue
 
-
+                # Validación de tiempo hh:mm
                 time_str = parts[2]
                 try:
                     h, m = map(int, time_str.split(':'))
@@ -29,6 +29,7 @@ def LoadArrivals(filename):
                 except:
                     continue
 
+                # En el archivo el orden es: AIRCRAFT(0) ORIGIN(1) ARRIVAL(2) AIRLINE(3)
                 arrivals.append(Aircraft(parts[0], parts[3], parts[1], parts[2]))
     except FileNotFoundError:
         print("Archivo no encontrado")
