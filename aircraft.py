@@ -116,7 +116,6 @@ def PlotFlightsType(aircrafts):
     plt.bar(categories, valors)
     plt.ylabel("Nombre de vols")
     plt.title("Arribades Schengen vs No-Schengen a LEBL")
-    plt.legend()
     plt.show()
 
 def SaveFlights(aircrafts, filename):
