@@ -14,3 +14,12 @@ if __name__ == '__main__':
     print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
+if __name__ == "__main__":
+    aircrafts = LoadArrivals("arrivals.txt")
+
+    print("Total vuelos:", len(aircrafts))
+
+    long_flights = LongDistanceArrivals(aircrafts)
+    print("Vuelos >2000 km:", len(long_flights))
