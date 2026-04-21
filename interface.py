@@ -20,7 +20,7 @@ class AirportApp:
         tk.Button(root, text="Actualitzar Schengen", command=self.apply_schengen).pack(fill='x', padx=20)
         tk.Button(root, text="MOSTRAR GRÀFIC SCHENGEN", command=self.draw_plot).pack(fill='x', padx=20)
 
-        # --- BOTONES VERSIÓN 2 (NUEVO) ---
+
         tk.Label(root, text="VERSIÓN 2: VUELOS", fg="green").pack(pady=(10, 0))
         tk.Button(root, text="Carregar Arrivals.txt", command=self.load_arrivals_v2).pack(fill='x', padx=20)
         tk.Button(root, text="Gràfic Arribades (Hores)", command=self.plot_hours_v2).pack(fill='x', padx=20)
@@ -29,7 +29,6 @@ class AirportApp:
         tk.Button(root, text="Google Earth (Tots)", command=self.make_map_v2).pack(fill='x', padx=20)
         tk.Button(root, text="Google Earth (Llarga Distància)", command=self.make_map_long_v2).pack(fill='x', padx=20)
 
-    # --- FUNCIONES EXISTENTES ---
     def load(self):
         self.airports = LoadAirports("Airports.txt")
         messagebox.showinfo("Info", "Carregats!")
@@ -48,7 +47,7 @@ class AirportApp:
         pyplot.legend();
         pyplot.show()
 
-    # --- FUNCIONES NUEVAS VERSIÓN 2 ---
+
 
     def load_arrivals_v2(self):
         f = filedialog.askopenfilename()
