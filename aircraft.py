@@ -41,7 +41,7 @@ def PlotArrivals(aircrafts):
     hores_dia = [0] * 24
     i = 0
     while i < len(aircrafts):
-        vol = aircraft[i]
+        vol = aircrafts[i]
         arrivada = vol.scheduled_time.split(":")
         hora = int(arrivada[0])
 
@@ -50,11 +50,11 @@ def PlotArrivals(aircrafts):
         i += 1
 
     X = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]
-    pyplot.bar(X, hores_dia, color='skyblue')
-    pyplot.ylabel("Nombre de vols")
-    pyplot.xlabel("Hora del dia")
-    pyplot.title("Freqüència d'aterratges a Barcelona (LEBL)")
-    pyplot.show()
+    plt.bar(X, hores_dia, color='skyblue')
+    plt.ylabel("Nombre de vols")
+    plt.xlabel("Hora del dia")
+    plt.title("Freqüència d'aterratges a Barcelona (LEBL)")
+    plt.show()
 
 def PlotAirlines(aircrafts):
     if len(aircrafts) == 0:
@@ -69,7 +69,7 @@ def PlotAirlines(aircrafts):
         found = False
         j = 0
         while j < len(aerolinia) and not found:
-            if aerolinia == actual:
+            if aerolinia[j] == actual:
                 vols[j] += 1
                 found = True
             j += 1
@@ -78,11 +78,11 @@ def PlotAirlines(aircrafts):
             vols.append(1)
         i += 1
 
-    pyplot.bar(aerolinia, vols, color='orange')
-    pyplot.xlabel("Aerolínia")
-    pyplot.ylabel("Nombre de vols")
-    pyplot.title("Vols per companyia aèria")
-    pyplot.show()
+    plt.bar(aerolinia, vols, color='orange')
+    plt.xlabel("Aerolínia")
+    plt.ylabel("Nombre de vols")
+    plt.title("Vols per companyia aèria")
+    plt.show()
 
 def PlotFlightsType(aircrafts):
     if len(aircrafts) == 0:
@@ -94,31 +94,30 @@ def PlotFlightsType(aircrafts):
     i = 0
     while i < len(aircrafts):
         vol = aircrafts[i]
-        codi_origen = vol.origin
         llista_schengen = ['LO', 'EB', 'LK', 'LC', 'EK', 'EE', 'EF', 'LF', 'ED', 'LG', 'EH', 'LH', 'BI', 'LI', 'EV', 'EY', 'EL', 'LM', 'EN', 'EP', 'LP', 'LZ', 'LJ', 'LE', 'ES', 'LS']
-        prefix = codi_origen[0:2]
+        prefix = vol.origin[0:2]
 
         es_schengen = False
         j = 0
         while j < len(llista_schengen):
             if llista_schengen[j] == prefix:
                 es_schengen = True
-                j += 1
+            j += 1
 
-            if es_schengen:
-                Schengen += 1
+        if es_schengen:
+            Schengen += 1
 
-            else:
-                NoSchengen += 1
-            i += 1
+        else:
+            NoSchengen += 1
+        i += 1
 
     categories = ['Schengen', 'No Schengen']
-    valors = [comptador_schengen, comptador_no_schengen]
-    pyplot.bar(categories, valors)
-    pyplot.ylabel("Nombre de vols")
-    pyplot.title("Arribades Schengen vs No-Schengen a LEBL")
-    pyplot.legend()
-    pyplot.show()
+    valors = [Schengen, NoSchengen]
+    plt.bar(categories, valors)
+    plt.ylabel("Nombre de vols")
+    plt.title("Arribades Schengen vs No-Schengen a LEBL")
+    plt.legend()
+    plt.show()
 
 def SaveFlights(aircrafts, filename):
     if not aircrafts: return -1
