@@ -16,13 +16,13 @@ class AirportApp:
 
 
         tk.Label(root, text="VERSIÓN 1: AEROPUERTOS", fg="blue").pack()
-        tk.Button(root, text="Carregar Airports.txt", command=self.load).pack(fill='x', padx=20)
+        tk.Button(root, text="Carregar Airports", command=self.load).pack(fill='x', padx=20)
         tk.Button(root, text="Actualitzar Schengen", command=self.apply_schengen).pack(fill='x', padx=20)
         tk.Button(root, text="MOSTRAR GRÀFIC SCHENGEN", command=self.draw_plot).pack(fill='x', padx=20)
         tk.Button(root, text="Google Earth", command=self.make_map).pack()
 
         tk.Label(root, text="VERSIÓN 2: VUELOS", fg="green").pack(pady=(10, 0))
-        tk.Button(root, text="Carregar Arrivals.txt", command=self.load_arrivals_v2).pack(fill='x', padx=20)
+        tk.Button(root, text="Carregar Arrivals", command=self.load_arrivals_v2).pack(fill='x', padx=20)
         tk.Button(root, text="Gràfic Arribades (Hores)", command=self.PlotArrivals).pack(fill='x', padx=20)
         tk.Button(root, text="Gràfic Aerolínies", command=self.PlotAirlines).pack(fill='x', padx=20)
         tk.Button(root, text="Gràfic Schengen (Apilat)", command=self.PlotFlightsType).pack(fill='x', padx=20)
