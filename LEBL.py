@@ -9,7 +9,7 @@ class BarcelonaAp:
 class Terminal:
     def __init__(self, name):
         self.name = name
-        self.boardingarea=[]
+        self.boardingareas=[]
         self.airlines=[]
 class BoardingArea:
     def __init__(self,name,type):
@@ -19,7 +19,7 @@ class BoardingArea:
 class Gate:
     def __init__(self,name):
         self.name = name
-        self.opcuat= False
+        self.ocupat= False
         self.id="-"
 
 
@@ -44,7 +44,7 @@ def LoadAirportStructure(filename):
     try:
         with open(filename, 'r') as f:
             header = f.readline().split()
-            bcn = BarcelonaAP(header[0])
+            bcn = BarcelonaAp(header[0])
             num_terminals = int(header[1])
 
             for _ in range(num_terminals):
@@ -64,7 +64,7 @@ def LoadAirportStructure(filename):
 
                     area = BoardingArea(a_name, a_type)
                     SetGates(area, i_gate, e_gate, f"{t_name}{a_name}G")
-                    terminal.boarding_areas.append(area)
+                    terminal.boardingareas.append(area)
 
                 bcn.terminals.append(terminal)
         return bcn
@@ -87,12 +87,12 @@ def AssignGate(bcn, aircraft):
 
     for terminal in bcn.terminals:
         if terminal.name == target_terminal:
-            for area in terminal.boarding_areas:
+            for area in terminal.boardingareas:
                 if area.type == aircraft.type:
                     for gate in area.gates:
-                        if not gate.is_occupied:
-                            gate.is_occupied = True
-                            gate.aircraft_id = aircraft.id
+                        if not gate.ocupat:
+                            gate.ocupat= True
+                            gate.id = aircraft.id
                             return 0
     return -1
 
@@ -103,8 +103,9 @@ def SetGates(area, init_gate, end_gate, prefix):
     for i in range(init_gate, end_gate+1):
         nomporta= prefix + str(i)
         novaporta= Gate(nomporta)
+        area.gates.append(novaporta)
 
-        novaporta.occupied = False
+        novaporta.ocupat = False
         novaporta.id="-"
 
     return 0
@@ -175,6 +176,6 @@ if __name__ == "__main__":
 
 
     if SetGates(area_a, 1, 5, "T1A") == 0:
-        t1.boardingarea.append(area_a)
+        t1.boardingareas.append(area_a)
         meu_ap.terminals.append(t1)
         print(f"Estructura de {meu_ap.code} amb el nom de les portes correcte.")
