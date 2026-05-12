@@ -23,8 +23,8 @@ class Gate:
 
 
 def LoadAirlines(terminal, t_name):
-    filename = f"{t_name}_Airlines.txt"
-    if not os.path.exists(filename):
+    Terminal = f"{t_name}_Airlines.txt"
+    if not os.path.exists("Terminals.txt""):
         return -1
 
     terminal.airlines = []

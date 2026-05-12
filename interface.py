@@ -3,6 +3,8 @@ from tkinter import messagebox, filedialog
 from airport import *
 import aircraft as ac
 from matplotlib import pyplot
+from LEBL import *
+import os
 
 
 class AirportApp:
@@ -14,20 +16,36 @@ class AirportApp:
         self.airports = []
         self.vuelos = []
 
+        self.lebl_ap = None
+        try:
+            self.lebl_ap = LoadAirportStructure("Terminals.txt")
+        except:
+            pass
 
-        tk.Label(root, text="VERSIÓN 1: AEROPUERTOS", fg="blue").pack()
-        tk.Button(root, text="Carregar Airports", command=self.load).pack(fill='x', padx=20)
-        tk.Button(root, text="Actualitzar Schengen", command=self.apply_schengen).pack(fill='x', padx=20)
-        tk.Button(root, text="MOSTRAR GRÀFIC SCHENGEN", command=self.draw_plot).pack(fill='x', padx=20)
-        tk.Button(root, text="Google Earth", command=self.make_map).pack()
+        tk.Label(self.root, text="VERSIÓN 1: AEROPUERTOS", fg="blue").pack()
+        tk.Button(self.root, text="Carregar Airports", command=self.load).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Actualitzar Schengen", command=self.apply_schengen).pack(fill='x', padx=20)
+        tk.Button(self.root, text="MOSTRAR GRÀFIC SCHENGEN", command=self.draw_plot).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Google Earth", command=self.make_map).pack()
 
-        tk.Label(root, text="VERSIÓN 2: VUELOS", fg="green").pack(pady=(10, 0))
-        tk.Button(root, text="Carregar Arrivals", command=self.load_arrivals_v2).pack(fill='x', padx=20)
-        tk.Button(root, text="Gràfic Arribades (Hores)", command=self.PlotArrivals).pack(fill='x', padx=20)
-        tk.Button(root, text="Gràfic Aerolínies", command=self.PlotAirlines).pack(fill='x', padx=20)
-        tk.Button(root, text="Gràfic Schengen (Apilat)", command=self.PlotFlightsType).pack(fill='x', padx=20)
-        tk.Button(root, text="Google Earth (Tots)", command=self.make_map_v2).pack(fill='x', padx=20)
-        tk.Button(root, text="Google Earth (Llarga Distància)", command=self.make_map_long_v2).pack(fill='x', padx=20)
+        tk.Label(self.root, text="VERSIÓN 2: VUELOS", fg="green").pack(pady=(10, 0))
+        tk.Button(self.root, text="Carregar Arrivals", command=self.load_arrivals_v2).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Gràfic Arribades (Hores)", command=self.PlotArrivals).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Gràfic Aerolínies", command=self.PlotAirlines).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Gràfic Schengen (Apilat)", command=self.PlotFlightsType).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Google Earth (Tots)", command=self.make_map_v2).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Google Earth (Llarga Distància)", command=self.make_map_long_v2).pack(fill='x', padx=20)
+
+        tk.Label(self.root, text="VERSIÓN 3: GESTIÓN DE PUERTAS", fg="orange").pack(pady=(10, 0))
+        tk.Button(self.root, text="Carregar Estructura LEBL", command=self.load_lebl_v3).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Assignar Portes a Arribades", command=self.assign_gates_v3).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Mapa d'Ocupació de Portes", command=self.show_map).pack(fill='x', padx=20)
+
+    def show_map(self):
+        if self.lebl_ap is not None:
+            PlotGateOccupancy(self.lebl_ap)
+        else:
+            messagebox.showwarning("Atenció", "Primer has de carregar l'estructura LEBL.")
 
     def load(self):
         self.airports = LoadAirports("Airports.txt")
@@ -85,6 +103,32 @@ class AirportApp:
             ac.MapFlights(vols_llargs, "vols_llarga_distancia.kml")
             messagebox.showinfo("KML", f"Creat KML amb {len(vols_llargs)} vols")
 
+    def load_lebl_v3(self):
+        self.lebl_ap = LoadAirportStructure("Terminals.txt")
+        if self.lebl_ap:
+            messagebox.showinfo("Info", "Estructura de l'aeroport carregada!")
+        else:
+            messagebox.showerror("Error", "No s'ha pogut carregar l'estructura.")
+
+
+    def assign_gates_v3(self):
+        if not self.lebl_ap or not self.vuelos:
+            messagebox.showwarning("Atenció", "Cal carregar l'aeroport i els vols primer.")
+            return
+
+        vols_sense_porta = 0
+        for vol in self.vuelos:
+            resultat = AssignGate(self.lebl_ap, vol)
+            if resultat == -1:
+                vols_sense_porta += 1
+
+        messagebox.showinfo("Assignació", f"Procés finalitzat. Vols sense porta: {vols_sense_porta}")
+
+    def show_occupancy_v3(self):
+        if not self.lebl_ap:
+            messagebox.showwarning("Atenció", "Carrega l'aeroport primer.")
+            return
+        PlotGateOccupancy(self.lebl_ap)
 
 if __name__ == "__main__":
     app_root = tk.Tk()
