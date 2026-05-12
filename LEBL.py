@@ -94,3 +94,46 @@ def AssignGate(bcn, aircraft):
                             gate.aircraft_id = aircraft.id
                             return 0
     return -1
+
+def SetGates(area, init_gate, end_gate, prefix):
+    if end_gate<= init_gate:
+        return -1
+    area.gets=[]
+    for i in range(init_gate, end_gate+1):
+        nomporta= prefix + str(i)
+        novaporta= Gate(nomporta)
+
+        novaporta.occupied = False
+        novaporta.id="-"
+
+    return 0
+
+def IsAirlineInTerminal(terminal, name):
+
+    if name == "" or name is None:
+        return False, -1
+
+    if not terminal.airlines:
+         return False
+    if name in terminal.airlines:
+     return True
+    else:
+        return False
+
+
+
+
+
+
+
+if __name__ == "__main__":
+
+    meu_ap = BarcelonaAp("LEBL")
+    t1 = Terminal("T1")
+    area_a = BoardingArea("Area A", "Schengen")
+
+
+    if SetGates(area_a, 1, 5, "T1A") == 0:
+        t1.boardingarea.append(area_a)
+        meu_ap.terminals.append(t1)
+        print(f"Estructura de {meu_ap.code} amb el nom de les portes correcte.")
