@@ -99,7 +99,7 @@ def AssignGate(bcn, aircraft):
 def SetGates(area, init_gate, end_gate, prefix):
     if end_gate<= init_gate:
         return -1
-    area.gets=[]
+    area.gates=[]
     for i in range(init_gate, end_gate+1):
         nomporta= prefix + str(i)
         novaporta= Gate(nomporta)
