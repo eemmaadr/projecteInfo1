@@ -1,5 +1,6 @@
 import matplotlib.pyplot as pyplot
 import math
+import os
 
 class BarcelonaAp:
     def __init__(self,code):
@@ -24,11 +25,11 @@ class Gate:
 
 def LoadAirlines(terminal, t_name):
     Terminal = f"{t_name}_Airlines.txt"
-    if not os.path.exists("Terminals.txt""):
+    if not os.path.exists("Terminals.txt"):
         return -1
 
     terminal.airlines = []
-    with open(filename, 'r') as f:
+    with open("Terminals.txt", 'r') as f:
         for line in f:
             parts = line.strip().split('\t')
             if len(parts) >= 2:
@@ -120,11 +121,51 @@ def IsAirlineInTerminal(terminal, name):
     else:
         return False
 
+def GateOccupancy(bcn):
+    llista_estat = []
+    i = 0
+    while i < len(bcn.terminals):
+        t = bcn.terminals[i]
+        j = 0
+        while j < len(t.boardingareas):
+            ba = t.boardingareas[j]
+            k = 0
+            while k < len(ba.gates):
+                g = ba.gates[k]
+                llista_estat.append([g.name, g.ocupat, g.id])
+                k += 1
+            j += 1
+        i += 1
+    return llista_estat
 
+def PlotGateOccupancy(bcn):
+    if not bcn or not bcn.terminals:
+        print("Error: No hi ha dades de l'aeroport.")
+        return
 
+    fig, ax = pyplot.subplots()
+    posX = 1
+    for t in bcn.terminals:
+        posY = 0
+        for ba in t.boardingareas:
+            for g in ba.gates:
+                color_porta = 'green'
+                if g.ocupat:
+                    color_porta = 'red'
 
+                ax.plot(posX, posY, marker='s', color=color_porta, markersize=10)
+                ax.text(posX + 0.1, posY, g.name, fontsize=8, verticalalignment='center')
 
+                if g.ocupat:
+                    ax.text(posX + 0.1, posY - 0.2, g.id, fontsize=7, color='darkred') # COHERENTE
 
+                posY -= 1
+            posY -= 2
+        posX += 5
+
+    pyplot.title("Estat de les Portes - Barcelona LEBL")
+    pyplot.axis('off')
+    pyplot.show()
 
 if __name__ == "__main__":
 
