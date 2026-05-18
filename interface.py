@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog
+import os
 from airport import *
 import aircraft as ac
 from matplotlib import pyplot
-from LEBL import *
-import os
-
+import LEBL
+from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure
 
 class AirportApp:
     def __init__(self, root):
@@ -17,10 +17,6 @@ class AirportApp:
         self.vuelos = []
 
         self.lebl_ap = None
-        try:
-            self.lebl_ap = LoadAirportStructure("Terminals.txt")
-        except:
-            pass
 
         tk.Label(self.root, text="VERSIÓN 1: AEROPUERTOS", fg="blue").pack()
         tk.Button(self.root, text="Carregar Airports", command=self.load).pack(fill='x', padx=20)
@@ -43,9 +39,10 @@ class AirportApp:
 
     def show_map(self):
         if self.lebl_ap is not None:
+            # Llamamos a la función con el ajuste de escala dinámico
             PlotGateOccupancy(self.lebl_ap)
         else:
-            messagebox.showwarning("Atenció", "Primer has de carregar l'estructura LEBL.")
+            messagebox.showwarning("Atenció", "Primer has de carregar l'estructura LEBL (Botó de la VERSIÓN 3).")
 
     def load(self):
         self.airports = LoadAirports("Airports.txt")
