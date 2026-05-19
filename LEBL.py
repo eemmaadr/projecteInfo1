@@ -182,87 +182,112 @@ def GateOccupancy(bcn):
 
 def PlotGateOccupancy(bcn):
 
-    fig, ax = plt.subplots(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(16, 8))
 
-    x_terminal = 0
+    terminal_x = 2
 
     for terminal in bcn.terminals:
 
-        # Barra horizontal superior del terminal
+        # Barra horizontal terminal
         ax.plot(
-            [x_terminal, x_terminal + 12],
-            [10, 10],
-            linewidth=14,
+            [terminal_x, terminal_x + 14],
+            [15, 15],
+            linewidth=18,
             color="#0B5A7A"
         )
+
         ax.text(
-            x_terminal - 1,
-            10,
+            terminal_x - 1,
+            15.5,
             terminal.name,
-            fontsize=16
+            fontsize=16,
+            fontweight="bold"
         )
-        x_area = x_terminal + 1
+
+        area_x = terminal_x + 2
+
         for area in terminal.boarding_areas:
-            # Columna vertical boarding area
+
+            # Columna boarding area
             ax.plot(
-                [x_area, x_area],
-                [2, 10],
-                linewidth=14,
+                [area_x, area_x],
+                [4, 15],
+                linewidth=18,
                 color="#0B5A7A"
             )
+
             ax.text(
-                x_area - 0.4,
-                1,
+                area_x - 0.7,
+                3,
                 terminal.name + "BA" + area.name,
                 fontsize=10
             )
-            y_gate = 8
+
+            y_gate = 13
+
+            gate_count = 0
+
             for gate in area.gates:
-                # pequeña línea horizontal gate
+
+                # limitar puertas visibles
+                if gate_count >= 8:
+                    break
+
+                # línea horizontal puerta
                 ax.plot(
-                    [x_area - 0.8, x_area],
+                    [area_x - 1.2, area_x],
                     [y_gate, y_gate],
-                    linewidth=3,
+                    linewidth=4,
                     color="#0B5A7A"
                 )
+
                 # color ocupación
                 if gate.ocupat:
-                    color = "red"
+                    gate_color = "red"
                 else:
-                    color = "green"
-                # cuadrado gate
+                    gate_color = "green"
+
+                # cuadrado puerta
                 ax.plot(
-                    x_area - 1.2,
+                    area_x - 1.6,
                     y_gate,
                     marker="s",
-                    markersize=8,
-                    color=color
+                    markersize=10,
+                    color=gate_color
                 )
-                # mostrar nombre solo algunas veces
-                if gate.name.endswith("1") or gate.name.endswith("3"):
-                    ax.text(
-                        x_area + 0.2,
-                        y_gate,
-                        gate.name,
-                        fontsize=8
-                    )
-                # aircraft ID
+
+                # nombre puerta
+                ax.text(
+                    area_x + 0.3,
+                    y_gate - 0.1,
+                    gate.name,
+                    fontsize=8
+                )
+
+                # avión si ocupado
                 if gate.ocupat:
+
                     ax.text(
-                        x_area - 2.2,
-                        y_gate,
+                        area_x - 3,
+                        y_gate - 0.1,
                         gate.aircraft_id,
-                        fontsize=8
+                        fontsize=8,
+                        color="darkred"
                     )
-                y_gate -= 0.8
-                # limitar altura
-                if y_gate < 2:
-                    break
-            x_area += 4
-        x_terminal += 18
-    plt.title("Estat de les Portes - Barcelona LEBL")
+
+                y_gate -= 1.1
+                gate_count += 1
+
+            area_x += 3
+
+        terminal_x += 18
+
+    plt.xlim(0, 40)
+    plt.ylim(0, 18)
 
     plt.axis("off")
+
+    plt.title("LEBL Airport Gate Occupancy")
 
     plt.show()
 
