@@ -134,10 +134,9 @@ def AssignGate(bcn, aircraft):
                     for gate in area.gates:
 
                         if gate.ocupat == False:
-
                             gate.ocupat = True
-
                             gate.aircraft_id = aircraft.aircraft_id
+                            gate.origin = aircraft.origin
 
                             return 0
 
@@ -249,9 +248,16 @@ def PlotGateOccupancy(bcn):
 
                 # color ocupación
                 if gate.ocupat:
-                    gate_color = "red"
-                else:
-                    gate_color = "green"
+
+                    if gate.ocupat:
+
+                        if IsSchengenAirport(gate.origin):
+                            gate_color = "green"
+                        else:
+                            gate_color = "red"
+
+                    else:
+                        gate_color = "lightgrey"
 
                 # cuadrado puerta
                 ax.plot(
