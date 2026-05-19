@@ -114,6 +114,8 @@ def SearchTerminal(bcn, name):
     return ""
 
 
+
+#hola
 def AssignGate(bcn, aircraft):
 
     terminal_name = SearchTerminal(bcn, aircraft.airline)
@@ -127,7 +129,7 @@ def AssignGate(bcn, aircraft):
 
         if terminal.name == terminal_name:
 
-            for area in terminal.boarding_areas:
+            for area in terminal.boarding.areas:
 
                 if area.type == required_type:
 

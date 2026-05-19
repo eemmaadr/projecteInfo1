@@ -33,6 +33,8 @@ class AirportApp:
         tk.Button(self.root, text="Google Earth (Tots)", command=self.make_map_v2).pack(fill='x', padx=20)
         tk.Button(self.root, text="Google Earth (Llarga Distància)", command=self.make_map_long_v2).pack(fill='x', padx=20)
 
+
+
         tk.Label(self.root, text="VERSIÓN 3: GESTIÓN DE PUERTAS", fg="orange").pack(pady=(10, 0))
         tk.Button(self.root, text="Carregar Estructura LEBL", command=self.load_lebl_v3).pack(fill='x', padx=20)
         tk.Button(self.root, text="Assignar Portes a Arribades", command=self.assign_gates_v3).pack(fill='x', padx=20)
@@ -53,6 +55,17 @@ class AirportApp:
                 messagebox.showinfo("Info", "No hi ha cap vol internacional (No-Schengen) actualment.")
         else:
             messagebox.showwarning("Atenció", "Primer has de carregar la llista de vols (Arrivals.txt).")
+
+    def eliminar_cercanos(self):
+        if not self.vuelos:
+            messagebox.showwarning("Aviso", "No hay vuelos cargados.")
+            return
+
+
+        self.vuelos = ac.Filtro(self.vuelos, "filtrados_1000km.kml")
+
+        messagebox.showinfo("Proceso completado", f"Vuelos restantes: {len(self.vuelos)}. Se ha generado el archivo KML.")
+
 
     def show_map(self):
         if self.lebl_ap is not None:

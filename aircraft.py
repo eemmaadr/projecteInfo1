@@ -12,6 +12,8 @@ class Aircraft:
         self.scheduled_time = scheduled_time
 
 
+
+
 def LoadArrivals(Arrivals):
     arrivalsList = []
     try:
