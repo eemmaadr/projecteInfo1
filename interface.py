@@ -37,6 +37,22 @@ class AirportApp:
         tk.Button(self.root, text="Assignar Portes a Arribades", command=self.assign_gates_v3).pack(fill='x', padx=20)
         tk.Button(self.root, text="Mapa d'Ocupació de Portes", command=self.show_map).pack(fill='x', padx=20)
 
+        tk.Button(self.root, text="Google Earth (No-Schengen)", command=self.make_map_no_schengen).pack(fill='x', padx=20)
+
+    def make_map_no_schengen(self):
+        if self.vuelos:
+            vols_inter = LEBL.NonSchengenArrivals(self.vuelos)
+
+            if len(vols_inter) > 0:
+                ac.MapFlights(vols_inter, "vols_no_schengen.kml")
+
+                os.startfile("vols_no_schengen.kml")
+                messagebox.showinfo("KML", f"S'han trobat {len(vols_inter)} vols No-Schengen.")
+            else:
+                messagebox.showinfo("Info", "No hi ha cap vol internacional (No-Schengen) actualment.")
+        else:
+            messagebox.showwarning("Atenció", "Primer has de carregar la llista de vols (Arrivals.txt).")
+
     def show_map(self):
         if self.lebl_ap is not None:
             # Llamamos a la función con el ajuste de escala dinámico
@@ -126,6 +142,8 @@ class AirportApp:
             messagebox.showwarning("Atenció", "Carrega l'aeroport primer.")
             return
         PlotGateOccupancy(self.lebl_ap)
+
+
 
 if __name__ == "__main__":
     app_root = tk.Tk()
