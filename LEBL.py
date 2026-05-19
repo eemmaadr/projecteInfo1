@@ -129,7 +129,7 @@ def AssignGate(bcn, aircraft):
 
         if terminal.name == terminal_name:
 
-            for area in terminal.boarding.areas:
+            for area in terminal.boardingareas:
 
                 if area.type == required_type:
 
@@ -137,7 +137,7 @@ def AssignGate(bcn, aircraft):
 
                         if gate.ocupat == False:
                             gate.ocupat = True
-                            gate.aircraft_id = aircraft.aircraft_id
+                            gate.id = aircraft.aircraft_id
                             gate.origin = aircraft.origin
 
                             return 0
@@ -192,18 +192,23 @@ def PlotGateOccupancy(bcn):
         print("Error: No hi ha dades de l'aeroport.")
         return
 
-    fig, ax = pyplot.subplots(figsize=(16, 9))
+    fig, ax = pyplot.subplots(figsize=(20, 10))
 
     pos_ba_X = 2
     y_minima_detectada = -26
 
     for t in bcn.terminals:
-        y_base = 0 if "1" in t.name else -10
+        y_base = 0 if "1" in t.name else -15  # Un poco más de separación vertical entre T1 y T2
 
-        largo_barra = len(t.boardingareas) * 4
-        ax.plot([pos_ba_X - 1, pos_ba_X + largo_barra - 3], [y_base, y_base], color='blue', linewidth=6,
-                solid_capstyle='butt')
-        ax.text(pos_ba_X - 1.5, y_base, t.name, fontsize=14, weight='bold', verticalalignment='center')
+        # 1. HACEMOS LA HORIZONTAL AZUL MÁS LARGA
+        # Aumentamos el multiplicador de 4 a 8.5 para cubrir el nuevo espacio
+        largo_barra = len(t.boardingareas) * 8.5
+
+        # Ajustamos el inicio (pos_ba_X - 2) y el final para que la línea luzca más larga
+        ax.plot([pos_ba_X - 2, pos_ba_X + largo_barra - 4], [y_base, y_base],
+                color='blue', linewidth=6, solid_capstyle='butt')
+
+        ax.text(pos_ba_X - 2.5, y_base, t.name, fontsize=14, weight='bold', verticalalignment='center')
 
         for ba in t.boardingareas:
             letra_zona = ba.name.replace("Area ", "").upper()
@@ -217,6 +222,7 @@ def PlotGateOccupancy(bcn):
             if punto_final_pasillo < y_minima_detectada:
                 y_minima_detectada = punto_final_pasillo
 
+            # Dibujamos la vertical azul (pasillo de la zona)
             ax.plot([pos_ba_X, pos_ba_X], [y_base, punto_final_pasillo], color='blue', linewidth=6,
                     solid_capstyle='butt')
             ax.text(pos_ba_X, punto_final_pasillo - 0.8, letra_zona, fontsize=12, weight='bold',
@@ -225,21 +231,22 @@ def PlotGateOccupancy(bcn):
             pos_g_Y = y_base - 1.0
 
             for index, g in enumerate(ba.gates):
+                # Lógica de ocupación de la Versión 3 [3, 4]
                 if g.ocupat is True or g.id != "-":
-                    color_porta = 'red'
+                    color_porta = 'r'
                 else:
                     color_porta = 'green'
 
                 if index % 2 == 0:
                     origen_X = pos_ba_X
-                    final_X = pos_ba_X - 0.6
+                    final_X = pos_ba_X - 0.8  # Ramas de puertas ligeramente más largas
                     text_align = 'right'
-                    offset_text = -0.25
+                    offset_text = -0.3
                 else:
                     origen_X = pos_ba_X
-                    final_X = pos_ba_X + 0.6
+                    final_X = pos_ba_X + 0.8
                     text_align = 'left'
-                    offset_text = 0.25
+                    offset_text = 0.3
 
                 ax.plot([origen_X, final_X], [pos_g_Y, pos_g_Y], color='blue', linewidth=2)
                 ax.plot(final_X, pos_g_Y, marker='s', color=color_porta, markersize=9)
@@ -255,13 +262,16 @@ def PlotGateOccupancy(bcn):
                 if index % 2 == 1:
                     pos_g_Y -= 1.2
 
-            pos_ba_X += 4.5
+            # 2. MÁS ESPACIO ENTRE CADA LÍNEA VERTICAL AZUL
+            # Cambiamos el incremento de 4.5 a 9.0 para separar las zonas
+            pos_ba_X += 9.0
 
-        pos_ba_X += 1.5
+            # Espacio extra al final de cada terminal
+        pos_ba_X += 3.0
 
     pyplot.title("Estat de les Portes - Barcelona LEBL", fontsize=16, weight='bold', pad=20)
     ax.set_xlim(0, pos_ba_X)
-    ax.set_ylim(y_minima_detectada - 3, 2)
+    ax.set_ylim(y_minima_detectada - 4, 2)
 
     pyplot.axis('off')
     pyplot.tight_layout()
