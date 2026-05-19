@@ -11,7 +11,7 @@ class BarcelonaAp:
 class Terminal:
     def __init__(self, name):
         self.name = name
-        self.boarding_areas = []
+        self.boardingareas = []
         self.airlines=[]
 class BoardingArea:
     def __init__(self,name,type):
@@ -99,7 +99,7 @@ def LoadAirportStructure(filename):
 
                 SetGates(area, init_gate, end_gate, prefix)
 
-                terminal.boarding_areas.append(area)
+                terminal.boardingareas.append(area)
 
             bcn.terminals.append(terminal)
 
@@ -186,121 +186,84 @@ def GateOccupancy(bcn):
     return llista_estat
 
 def PlotGateOccupancy(bcn):
+    if not bcn or not bcn.terminals:
+        print("Error: No hi ha dades de l'aeroport.")
+        return
 
-    fig, ax = plt.subplots(figsize=(16, 8))
+    fig, ax = pyplot.subplots(figsize=(16, 9))
 
-    terminal_x = 2
+    pos_ba_X = 2
+    y_minima_detectada = -26
 
-    for terminal in bcn.terminals:
+    for t in bcn.terminals:
+        y_base = 0 if "1" in t.name else -10
 
-        # Barra horizontal terminal
-        ax.plot(
-            [terminal_x, terminal_x + 14],
-            [15, 15],
-            linewidth=18,
-            color="#0B5A7A"
-        )
+        largo_barra = len(t.boardingareas) * 4
+        ax.plot([pos_ba_X - 1, pos_ba_X + largo_barra - 3], [y_base, y_base], color='blue', linewidth=6,
+                solid_capstyle='butt')
+        ax.text(pos_ba_X - 1.5, y_base, t.name, fontsize=14, weight='bold', verticalalignment='center')
 
-        ax.text(
-            terminal_x - 1,
-            15.5,
-            terminal.name,
-            fontsize=16,
-            fontweight="bold"
-        )
+        for ba in t.boardingareas:
+            letra_zona = ba.name.replace("Area ", "").upper()
+            if not letra_zona:
+                letra_zona = ba.name
 
-        area_x = terminal_x + 2
+            max_puertas = len(ba.gates)
+            largo_pasillo = max(7, (max_puertas // 2) * 1.3)
 
-        for area in terminal.boarding_areas:
+            punto_final_pasillo = y_base - largo_pasillo
+            if punto_final_pasillo < y_minima_detectada:
+                y_minima_detectada = punto_final_pasillo
 
-            # Columna boarding area
-            ax.plot(
-                [area_x, area_x],
-                [4, 15],
-                linewidth=18,
-                color="#0B5A7A"
-            )
+            ax.plot([pos_ba_X, pos_ba_X], [y_base, punto_final_pasillo], color='blue', linewidth=6,
+                    solid_capstyle='butt')
+            ax.text(pos_ba_X, punto_final_pasillo - 0.8, letra_zona, fontsize=12, weight='bold',
+                    horizontalalignment='center')
 
-            ax.text(
-                area_x - 0.7,
-                3,
-                terminal.name + "BA" + area.name,
-                fontsize=10
-            )
+            pos_g_Y = y_base - 1.0
 
-            y_gate = 13
-
-            gate_count = 0
-
-            for gate in area.gates:
-
-                # limitar puertas visibles
-                if gate_count >= 8:
-                    break
-
-                # línea horizontal puerta
-                ax.plot(
-                    [area_x - 1.2, area_x],
-                    [y_gate, y_gate],
-                    linewidth=4,
-                    color="#0B5A7A"
-                )
-
-                # color ocupación
-                if gate.ocupat:
-
-                        if IsSchengenAirport(gate.origin):
-                            gate_color = "green"
-                        else:
-                            gate_color = "red"
-
+            for index, g in enumerate(ba.gates):
+                if g.ocupat is True or g.id != "-":
+                    color_porta = 'red'
                 else:
-                        gate_color = "lightgrey"
+                    color_porta = 'green'
 
-                # cuadrado puerta
-                ax.plot(
-                    area_x - 1.6,
-                    y_gate,
-                    marker="s",
-                    markersize=10,
-                    color=gate_color
-                )
+                if index % 2 == 0:
+                    origen_X = pos_ba_X
+                    final_X = pos_ba_X - 0.6
+                    text_align = 'right'
+                    offset_text = -0.25
+                else:
+                    origen_X = pos_ba_X
+                    final_X = pos_ba_X + 0.6
+                    text_align = 'left'
+                    offset_text = 0.25
 
-                # nombre puerta
-                ax.text(
-                    area_x + 0.3,
-                    y_gate - 0.1,
-                    gate.name,
-                    fontsize=8
-                )
+                ax.plot([origen_X, final_X], [pos_g_Y, pos_g_Y], color='blue', linewidth=2)
+                ax.plot(final_X, pos_g_Y, marker='s', color=color_porta, markersize=9)
 
-                # avión si ocupado
-                if gate.ocupat:
+                if color_porta == 'red':
+                    texto_puerta = f"{g.name} ({g.id})" if text_align == 'right' else f"{g.id} {g.name}"
+                else:
+                    texto_puerta = g.name
 
-                    ax.text(
-                        area_x - 3,
-                        y_gate - 0.1,
-                        gate.aircraft_id,
-                        fontsize=8,
-                        color="darkred"
-                    )
+                ax.text(final_X + offset_text, pos_g_Y, texto_puerta,
+                        fontsize=7, verticalalignment='center', horizontalalignment=text_align)
 
-                y_gate -= 1.1
-                gate_count += 1
+                if index % 2 == 1:
+                    pos_g_Y -= 1.2
 
-            area_x += 3
+            pos_ba_X += 4.5
 
-        terminal_x += 18
+        pos_ba_X += 1.5
 
-    plt.xlim(0, 40)
-    plt.ylim(0, 18)
+    pyplot.title("Estat de les Portes - Barcelona LEBL", fontsize=16, weight='bold', pad=20)
+    ax.set_xlim(0, pos_ba_X)
+    ax.set_ylim(y_minima_detectada - 3, 2)
 
-    plt.axis("off")
-
-    plt.title("LEBL Airport Gate Occupancy")
-
-    plt.show()
-
+    pyplot.axis('off')
+    pyplot.tight_layout()
+    pyplot.show()
 
 def NonSchengenArrivals(llista_vols):
     llista_schengen = ['LO', 'EB', 'LK', 'LC', 'EK', 'EE', 'EF', 'LF', 'ED', 'LG', 'EH', 'LH', 'BI', 'LI', 'EV', 'EY',
