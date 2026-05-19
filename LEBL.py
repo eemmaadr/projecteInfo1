@@ -1,6 +1,7 @@
 import matplotlib.pyplot as pyplot
 import math
 import os
+import matplotlib.pyplot as plt
 
 class BarcelonaAp:
     def __init__(self,code):
@@ -9,7 +10,7 @@ class BarcelonaAp:
 class Terminal:
     def __init__(self, name):
         self.name = name
-        self.boardingareas=[]
+        self.boarding_areas = []
         self.airlines=[]
 class BoardingArea:
     def __init__(self,name,type):
@@ -24,76 +25,116 @@ class Gate:
 
 
 def LoadAirlines(terminal, t_name):
-    Terminal = f"{t_name}_Airlines.txt"
-    if not os.path.exists("Terminals.txt"):
-        return -1
 
-    terminal.airlines = []
-    with open("Terminals.txt", 'r') as f:
-        for line in f:
-            parts = line.strip().split('\t')
-            if len(parts) >= 2:
-                terminal.airlines.append(parts[1])
-    return 0
+    filename = t_name + "_Airlines.txt"
 
-
-def LoadAirportStructure(filename):
     if not os.path.exists(filename):
         return -1
 
-    try:
-        with open(filename, 'r') as f:
-            header = f.readline().split()
-            bcn = BarcelonaAp(header[0])
-            num_terminals = int(header[1])
+    airlines_list = []
 
-            for _ in range(num_terminals):
-                t_line = f.readline().split()
-                t_name = t_line[1]
-                num_areas = int(t_line[2])
+    with open(filename, "r", encoding="utf-8") as file:
 
-                terminal = Terminal(t_name)
-                LoadAirlines(terminal, t_name)
+        for line in file:
 
-                for _ in range(num_areas):
-                    a_line = f.readline().split()
-                    a_name = a_line[1]
-                    a_type = a_line[2]
-                    i_gate = int(a_line[4])
-                    e_gate = int(a_line[6])
+            line = line.strip()
 
-                    area = BoardingArea(a_name, a_type)
-                    SetGates(area, i_gate, e_gate, f"{t_name}{a_name}G")
-                    terminal.boardingareas.append(area)
+            if line != "":
 
-                bcn.terminals.append(terminal)
-        return bcn
-    except:
+                parts = line.split("\t")
+
+                if len(parts) >= 2:
+
+                    airline_code = parts[1]
+
+                    airlines_list.append(airline_code)
+
+    terminal.airlines = airlines_list
+
+    return 0
+
+def LoadAirportStructure(filename):
+
+    if not os.path.exists(filename):
         return -1
+
+    with open(filename, "r", encoding="utf-8") as file:
+
+        first_line = file.readline().strip().split()
+
+        airport_code = first_line[0]
+
+        num_terminals = int(first_line[1])
+
+        bcn = BarcelonaAp(airport_code)
+
+        for i in range(num_terminals):
+
+            terminal_line = file.readline().strip().split()
+
+            terminal_name = terminal_line[1]
+
+            num_areas = int(terminal_line[2])
+
+            terminal = Terminal(terminal_name)
+
+            LoadAirlines(terminal, terminal_name)
+
+            for j in range(num_areas):
+
+                area_line = file.readline().strip().split()
+
+                area_name = area_line[1]
+
+                area_type = area_line[2]
+
+                init_gate = int(area_line[4])
+
+                end_gate = int(area_line[6])
+
+                area = BoardingArea(area_name, area_type)
+
+                prefix = terminal_name + "BA" + area_name + "G"
+
+                SetGates(area, init_gate, end_gate, prefix)
+
+                terminal.boarding_areas.append(area)
+
+            bcn.terminals.append(terminal)
+
+    return bcn
 
 
 def SearchTerminal(bcn, name):
     for terminal in bcn.terminals:
         if IsAirlineInTerminal(terminal, name):
             return terminal.name
+
     return ""
 
 
 def AssignGate(bcn, aircraft):
-    target_terminal = SearchTerminal(bcn, aircraft.airline)
-
-    if target_terminal == "":
+    terminal_name = SearchTerminal(bcn, aircraft.airline)
+    if terminal_name == "":
         return -1
-
+    schengen_airports = [
+        "LEMD", "LFPG", "LIRF", "EDDF",
+        "EHAM", "LPPT", "LOWW"
+    ]
+    if aircraft.origin in schengen_airports:
+        required_type = "Schengen"
+    else:
+        required_type = "non-Schengen"
     for terminal in bcn.terminals:
-        if terminal.name == target_terminal:
-            for area in terminal.boardingareas:
-                if area.type == aircraft.type:
+        if terminal.name == terminal_name:
+            for area in terminal.boarding_areas:
+                if area.type == required_type:
                     for gate in area.gates:
-                        if not gate.ocupat:
-                            gate.ocupat= True
-                            gate.id = aircraft.id
+                        if gate.ocupat == False:
+                            gate.ocupat = True
+                            gate.aircraft_id = aircraft.aircraft_id
                             return 0
+
     return -1
 
 def SetGates(area, init_gate, end_gate, prefix):
@@ -140,33 +181,90 @@ def GateOccupancy(bcn):
     return llista_estat
 
 def PlotGateOccupancy(bcn):
-    if not bcn or not bcn.terminals:
-        print("Error: No hi ha dades de l'aeroport.")
-        return
 
-    fig, ax = pyplot.subplots()
-    posX = 1
-    for t in bcn.terminals:
-        posY = 0
-        for ba in t.boardingareas:
-            for g in ba.gates:
-                color_porta = 'green'
-                if g.ocupat:
-                    color_porta = 'red'
+    fig, ax = plt.subplots(figsize=(14, 6))
 
-                ax.plot(posX, posY, marker='s', color=color_porta, markersize=10)
-                ax.text(posX + 0.1, posY, g.name, fontsize=8, verticalalignment='center')
+    x_terminal = 0
 
-                if g.ocupat:
-                    ax.text(posX + 0.1, posY - 0.2, g.id, fontsize=7, color='darkred') # COHERENTE
+    for terminal in bcn.terminals:
 
-                posY -= 1
-            posY -= 2
-        posX += 5
+        # Barra horizontal superior del terminal
+        ax.plot(
+            [x_terminal, x_terminal + 12],
+            [10, 10],
+            linewidth=14,
+            color="#0B5A7A"
+        )
+        ax.text(
+            x_terminal - 1,
+            10,
+            terminal.name,
+            fontsize=16
+        )
+        x_area = x_terminal + 1
+        for area in terminal.boarding_areas:
+            # Columna vertical boarding area
+            ax.plot(
+                [x_area, x_area],
+                [2, 10],
+                linewidth=14,
+                color="#0B5A7A"
+            )
+            ax.text(
+                x_area - 0.4,
+                1,
+                terminal.name + "BA" + area.name,
+                fontsize=10
+            )
+            y_gate = 8
+            for gate in area.gates:
+                # pequeña línea horizontal gate
+                ax.plot(
+                    [x_area - 0.8, x_area],
+                    [y_gate, y_gate],
+                    linewidth=3,
+                    color="#0B5A7A"
+                )
+                # color ocupación
+                if gate.ocupat:
+                    color = "red"
+                else:
+                    color = "green"
+                # cuadrado gate
+                ax.plot(
+                    x_area - 1.2,
+                    y_gate,
+                    marker="s",
+                    markersize=8,
+                    color=color
+                )
+                # mostrar nombre solo algunas veces
+                if gate.name.endswith("1") or gate.name.endswith("3"):
+                    ax.text(
+                        x_area + 0.2,
+                        y_gate,
+                        gate.name,
+                        fontsize=8
+                    )
+                # aircraft ID
+                if gate.ocupat:
+                    ax.text(
+                        x_area - 2.2,
+                        y_gate,
+                        gate.aircraft_id,
+                        fontsize=8
+                    )
+                y_gate -= 0.8
+                # limitar altura
+                if y_gate < 2:
+                    break
+            x_area += 4
+        x_terminal += 18
+    plt.title("Estat de les Portes - Barcelona LEBL")
 
-    pyplot.title("Estat de les Portes - Barcelona LEBL")
-    pyplot.axis('off')
-    pyplot.show()
+    plt.axis("off")
+
+    plt.show()
 
 
 def NonSchengenArrivals(llista_vols):

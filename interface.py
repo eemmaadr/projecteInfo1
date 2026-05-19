@@ -7,6 +7,7 @@ from matplotlib import pyplot
 import LEBL
 from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure
 
+
 class AirportApp:
     def __init__(self, root):
         self.root = root
