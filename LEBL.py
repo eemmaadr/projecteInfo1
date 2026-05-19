@@ -249,14 +249,12 @@ def PlotGateOccupancy(bcn):
                 # color ocupación
                 if gate.ocupat:
 
-                    if gate.ocupat:
-
                         if IsSchengenAirport(gate.origin):
                             gate_color = "green"
                         else:
                             gate_color = "red"
 
-                    else:
+                else:
                         gate_color = "lightgrey"
 
                 # cuadrado puerta
