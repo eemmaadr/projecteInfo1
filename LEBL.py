@@ -2,6 +2,7 @@ import matplotlib.pyplot as pyplot
 import math
 import os
 import matplotlib.pyplot as plt
+from airport import IsSchengenAirport
 
 class BarcelonaAp:
     def __init__(self,code):
@@ -114,25 +115,30 @@ def SearchTerminal(bcn, name):
 
 
 def AssignGate(bcn, aircraft):
+
     terminal_name = SearchTerminal(bcn, aircraft.airline)
     if terminal_name == "":
         return -1
-    schengen_airports = [
-        "LEMD", "LFPG", "LIRF", "EDDF",
-        "EHAM", "LPPT", "LOWW"
-    ]
-    if aircraft.origin in schengen_airports:
+    if IsSchengenAirport(aircraft.origin):
         required_type = "Schengen"
     else:
         required_type = "non-Schengen"
     for terminal in bcn.terminals:
+
         if terminal.name == terminal_name:
+
             for area in terminal.boarding_areas:
+
                 if area.type == required_type:
+
                     for gate in area.gates:
+
                         if gate.ocupat == False:
+
                             gate.ocupat = True
+
                             gate.aircraft_id = aircraft.aircraft_id
+
                             return 0
 
     return -1
