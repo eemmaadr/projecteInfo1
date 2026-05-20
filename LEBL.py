@@ -198,13 +198,10 @@ def PlotGateOccupancy(bcn):
     y_minima_detectada = -26
 
     for t in bcn.terminals:
-        y_base = 0 if "1" in t.name else -15  # Un poco más de separación vertical entre T1 y T2
+        y_base = 0 if "1" in t.name else -15
 
-        # 1. HACEMOS LA HORIZONTAL AZUL MÁS LARGA
-        # Aumentamos el multiplicador de 4 a 8.5 para cubrir el nuevo espacio
         largo_barra = len(t.boardingareas) * 8.5
 
-        # Ajustamos el inicio (pos_ba_X - 2) y el final para que la línea luzca más larga
         ax.plot([pos_ba_X - 2, pos_ba_X + largo_barra - 4], [y_base, y_base],
                 color='blue', linewidth=6, solid_capstyle='butt')
 
@@ -222,7 +219,6 @@ def PlotGateOccupancy(bcn):
             if punto_final_pasillo < y_minima_detectada:
                 y_minima_detectada = punto_final_pasillo
 
-            # Dibujamos la vertical azul (pasillo de la zona)
             ax.plot([pos_ba_X, pos_ba_X], [y_base, punto_final_pasillo], color='blue', linewidth=6,
                     solid_capstyle='butt')
             ax.text(pos_ba_X, punto_final_pasillo - 0.8, letra_zona, fontsize=12, weight='bold',
@@ -231,7 +227,6 @@ def PlotGateOccupancy(bcn):
             pos_g_Y = y_base - 1.0
 
             for index, g in enumerate(ba.gates):
-                # Lógica de ocupación de la Versión 3 [3, 4]
                 if g.ocupat is True or g.id != "-":
                     color_porta = 'r'
                 else:
@@ -239,7 +234,7 @@ def PlotGateOccupancy(bcn):
 
                 if index % 2 == 0:
                     origen_X = pos_ba_X
-                    final_X = pos_ba_X - 0.8  # Ramas de puertas ligeramente más largas
+                    final_X = pos_ba_X - 0.8
                     text_align = 'right'
                     offset_text = -0.3
                 else:
@@ -262,11 +257,8 @@ def PlotGateOccupancy(bcn):
                 if index % 2 == 1:
                     pos_g_Y -= 1.2
 
-            # 2. MÁS ESPACIO ENTRE CADA LÍNEA VERTICAL AZUL
-            # Cambiamos el incremento de 4.5 a 9.0 para separar las zonas
             pos_ba_X += 9.0
 
-            # Espacio extra al final de cada terminal
         pos_ba_X += 3.0
 
     pyplot.title("Estat de les Portes - Barcelona LEBL", fontsize=16, weight='bold', pad=20)
