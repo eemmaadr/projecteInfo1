@@ -4,12 +4,14 @@ from airport import LoadAirports, IsSchengenAirport
 
 
 class Aircraft:
-    def __init__(self, aircraft_id="", airline="", origin="", scheduled_time=""):
+    def __init__(self, aircraft_id="", airline="", origin="", scheduled_time="", destination="", departure_time=""):
 
-        self.aircraft_id = aircraft_id
+        self.aircraft_id = aircraft_id              #Info
         self.airline = airline
-        self.origin = origin
+        self.origin = origin                        #Llegada
         self.scheduled_time = scheduled_time
+        self.destination = destination              #Salida
+        self.departure_time = departure_time
 
 
 
@@ -180,6 +182,32 @@ def MapFlights(aircrafts, filename):
                 f.write(
                     f'<LineString><coordinates>{ori.lon},{ori.lat},0 {lebl.lon},{lebl.lat},0</coordinates></LineString></Placemark>\n')
         f.write('</Document></kml>')
+
+def LoadDepartures(filename):
+    departures_list = []
+    error = 0
+    try:
+        file = open(filename, "r")
+        next(file)
+        for line in file:
+            parts = line.strip().split()
+            if len(parts) != 4:
+                continue
+            aircraft_id = parts[0]
+            destination = parts[1]
+            h, m = parts[2].split(":")
+            departure_time = f"{int(h):02d}:{m}"
+            airline = parts[3]
+            aircraft = Aircraft()
+            aircraft.aircraft_id = aircraft_id
+            aircraft.destination = destination
+            aircraft.departure_time = departure_time
+            aircraft.airline = airline
+            departures_list.append(aircraft)
+        file.close()
+    except FileNotFoundError:
+        error = -1
+    return departures_list, error
 
 
 if __name__ == "__main__":
