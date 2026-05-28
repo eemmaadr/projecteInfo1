@@ -27,7 +27,7 @@ class Gate:
 
 def LoadAirlines(terminal, t_name):
 
-    filename = t_name + "_Airlines.txt"
+    filename = t_name + "_Airlines.txt"     #construimos nombre de archivo con las T
 
     if not os.path.exists(filename):
         return -1
@@ -42,13 +42,13 @@ def LoadAirlines(terminal, t_name):
 
             if line != "":
 
-                parts = line.split("\t")
+                parts = line.split("\t")    #divide,
 
                 if len(parts) >= 2:
 
                     airline_code = parts[1]
 
-                    airlines_list.append(airline_code)
+                    airlines_list.append(airline_code)   #Añade aerolinia a la lista
 
     terminal.airlines = airlines_list
 
@@ -63,13 +63,13 @@ def LoadAirportStructure(filename):
 
         first_line = file.readline().strip().split()
 
-        airport_code = first_line[0]
+        airport_code = first_line[0]    #Guarda el código y el número
 
         num_terminals = int(first_line[1])
 
-        bcn = BarcelonaAp(airport_code)
+        bcn = BarcelonaAp(airport_code)   #Crea el aeropuerto
 
-        for i in range(num_terminals):
+        for i in range(num_terminals):   #Repite tantas veces como terminales haya.
 
             terminal_line = file.readline().strip().split()
 
@@ -77,7 +77,7 @@ def LoadAirportStructure(filename):
 
             num_areas = int(terminal_line[2])
 
-            terminal = Terminal(terminal_name)
+            terminal = Terminal(terminal_name)   #Crea la terminal
 
             LoadAirlines(terminal, terminal_name)
 
@@ -93,23 +93,23 @@ def LoadAirportStructure(filename):
 
                 end_gate = int(area_line[6])
 
-                area = BoardingArea(area_name, area_type)
+                area = BoardingArea(area_name, area_type)    #Crea boarding area.
 
                 prefix = terminal_name + "BA" + area_name + "G"
 
-                SetGates(area, init_gate, end_gate, prefix)
+                SetGates(area, init_gate, end_gate, prefix)   #Crea las puertas
 
-                terminal.boardingareas.append(area)
+                terminal.boardingareas.append(area)   #Añade el área al terminal
 
-            bcn.terminals.append(terminal)
+            bcn.terminals.append(terminal)   #Añade terminal al aeropuerto
 
-    return bcn
+    return bcn    #Te da el aeropurto completo
 
 
 def SearchTerminal(bcn, name):
-    for terminal in bcn.terminals:
-        if IsAirlineInTerminal(terminal, name):
-            return terminal.name
+    for terminal in bcn.terminals:    #Recorre terminales
+        if IsAirlineInTerminal(terminal, name):    #comprueba
+            return terminal.name  #si la encuentra retorna la terminal
 
     return ""
 
@@ -118,22 +118,22 @@ def SearchTerminal(bcn, name):
 #hola
 def AssignGate(bcn, aircraft):
 
-    terminal_name = SearchTerminal(bcn, aircraft.airline)
+    terminal_name = SearchTerminal(bcn, aircraft.airline)   #Busca terminal de la aerolínea
     if terminal_name == "":
         return -1
     if IsSchengenAirport(aircraft.origin):
         required_type = "Schengen"
     else:
-        required_type = "non-Schengen"
-    for terminal in bcn.terminals:
+        required_type = "non-Schengen"     #schengen
+    for terminal in bcn.terminals:   #Recorre terminales
 
-        if terminal.name == terminal_name:
+        if terminal.name == terminal_name:    #Recorre áreas
 
             for area in terminal.boardingareas:
 
                 if area.type == required_type:
 
-                    for gate in area.gates:
+                    for gate in area.gates:         #Recorre puertas
 
                         if gate.ocupat == False:
                             gate.ocupat = True
@@ -269,17 +269,6 @@ def PlotGateOccupancy(bcn):
     pyplot.tight_layout()
     pyplot.show()
 
-def NonSchengenArrivals(llista_vols):
-    llista_schengen = ['LO', 'EB', 'LK', 'LC', 'EK', 'EE', 'EF', 'LF', 'ED', 'LG', 'EH', 'LH', 'BI', 'LI', 'EV', 'EY',
-                       'EL', 'LM', 'EN', 'EP', 'LP', 'LZ', 'LJ', 'LE', 'ES', 'LS']
-    vols_filtrats = []
-
-    for vol in llista_vols:
-        prefix = vol.origin[:2]
-        if prefix not in llista_schengen:
-            vols_filtrats.append(vol)
-
-    return vols_filtrats
 if __name__ == "__main__":
 
     meu_ap = BarcelonaAp("LEBL")
