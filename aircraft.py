@@ -4,14 +4,15 @@ from airport import LoadAirports, IsSchengenAirport
 
 
 class Aircraft:
-    def __init__(self, aircraft_id="", airline="", origin="", scheduled_time=""):
+    def __init__(self, aircraft_id="", airline="", origin="", scheduled_time="", destination_airport="", departure_time="00:00"):
 
         self.aircraft_id = aircraft_id
         self.airline = airline
         self.origin = origin
         self.scheduled_time = scheduled_time
 
-
+        self.destination_airport = destination_airport
+        self.departure_time = departure_time
 
 
 def LoadArrivals(Arrivals):
