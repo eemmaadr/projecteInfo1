@@ -14,8 +14,6 @@ class Aircraft:
         self.departure_time = departure_time
 
 
-
-
 def LoadArrivals(Arrivals):
     arrivalsList = []
     try:

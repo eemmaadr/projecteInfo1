@@ -269,6 +269,75 @@ def PlotGateOccupancy(bcn):
     pyplot.tight_layout()
     pyplot.show()
 
+def AssignNightGates(bcn, aircrafts):
+    # Assigna una porta de l'aeroport a cada avió de la llista (aircrafts) que sigui només de sortida (night aircraft)
+    if len(aircrafts) == 0:
+        return -1
+
+    i = 0
+    while i<len(aircrafts):
+        aircraft_actual = aircrafts[i]
+        if aircraft_actual.origin == "-" and aircraft_actual == "00:00":
+            AssignGate(bcn,aircraft_actual)
+        i += 1
+
+def FreeGate(bcn,id):
+    # Busca l'avió amb l'id especificat en totes les portes de l'aeroport. Si el troba, allibera la porta. Si no, retorna un codi d'error.
+    found = False
+    i = 0
+    while i<len(bcn.terminals) and not found: #Recorrem totes les terminals, areas i portes
+        terminal = bcn.terminals[i]
+
+        j = 0
+        while j < len(terminal.boardingareas) and not found:
+            area = terminal.boardingareas[j]
+
+            k = 0
+            while k < len(area.gates) and not found:
+                gate = area.gates[k]
+                if gate.id == "-":
+                    found = True
+
+            k += 1
+        j +=1
+    i += 1
+
+    if not found: #Si no s'ha trobat cap avió, indiquem error
+        return -1
+
+    return 1 #Sinó indiquem que s'ha executat correctament
+
+def AssignGatesAtTime(bcn, aircrafts, time):
+    #  Actualitza l'estat de les portes de l'aeroport per a una franja horària específica.
+    # Primer allibera les portes dels avions que han marxat i després assigna portes als que arriben.
+    contador_no_assig = 0
+    i = 0
+    while i<len(aircrafts):
+        ac = aicrafts[i]
+        # Si l'avió té dades de sortida i ja hauria d'haver marxat
+        if ac.departure_time != "00:00" and ac.departure_time <= time:
+            FreeGate(bcn,ac.aircraft_id)
+        i += 1
+
+    hora_actual = time[0:2]
+    j = 0
+    while j<len(aircrafts):
+        ac = aircrafts[j]
+        # Comprovem si l'avió aterra dins d'aquesta hora
+        if ac.scheduled_time != "00:00" and ac.scheduled_time[0:2] == hora_actual:
+            resultat = AssignGate(bcn,ac)
+
+        # Si AssignGate retorna un codi d'error (-1), significa que l'aeroport està ple
+            if resultat == -1:
+                contador_no_assig += 1
+        j += 1
+    return contador_no_assig
+
+
+# PLOT EXTRA
+
+
+
 if __name__ == "__main__":
 
     meu_ap = BarcelonaAp("LEBL")
