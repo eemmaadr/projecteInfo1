@@ -2,7 +2,6 @@ import math
 import matplotlib.pyplot as plt
 from airport import LoadAirports, IsSchengenAirport
 
-
 class Aircraft:
     def __init__(self, aircraft_id="", airline="", origin="", scheduled_time="", destination="", departure_time=""):
 
@@ -12,9 +11,6 @@ class Aircraft:
         self.scheduled_time = scheduled_time
         self.destination = destination              #Salida
         self.departure_time = departure_time
-
-
-
 
 def LoadArrivals(Arrivals):
     arrivalsList = []

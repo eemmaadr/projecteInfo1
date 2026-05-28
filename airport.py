@@ -2,13 +2,16 @@ import matplotlib.pyplot as pyplot
 import math
 
 class Airport:
+    # Classe que representa un aeroport amb el seu codi ICAO, coordenades i estat Schengen
     def __init__(self, code, lat, lon):
         self.code = code
         self.lat = lat
         self.lon = lon
-        self.Schengen = False
+        self.Schengen = False # Per defecte s'inicialitza com a No-Schengen
 
 def IsSchengenAirport(code):
+    # Comprova si un aeroport pertany a l'espai Schengen analitzant el prefix del codi.
+    # Retorna True si coincideix amb algun prefix de la llista, sinó False.
     if code == "":
         return False
     llista_codis = [
@@ -18,7 +21,7 @@ def IsSchengenAirport(code):
     prefix = code[0:2]
     trobat = False
     i = 0
-    while i < len(llista_codis) and not trobat:
+    while i < len(llista_codis) and not trobat: #Fem una cerca per trobar els prefixos
         if llista_codis[i] == prefix:
             trobat = True
         else:
@@ -26,27 +29,30 @@ def IsSchengenAirport(code):
     return trobat
 
 def SetSchengen(airport):
+    # Actualitza l'atribut Schengen de l'objecte Airport passat per paràmetre
     airport.Schengen = IsSchengenAirport(airport.code)
 
 def PrintAirport(airport):
+    # Mostra per consola les dades estructurades d'un aeroport.
     print("Code:", airport.code, "Lat:", airport.lat, "Lon:", airport.lon, "Schengen:", airport.Schengen)
 
 def _string_to_decimal(coord_str):
+    # Ho utilizem per convertir les coordenades a graus decimals (float)
     direccio = coord_str[0]
     if len(coord_str) == 7:
-        d = float(coord_str[1:3])
-        m = float(coord_str[3:5])
-        s = float(coord_str[5:7])
+        d = float(coord_str[1:3]) # Graus
+        m = float(coord_str[3:5]) # Minuts
+        s = float(coord_str[5:7]) # Segons
     else:
         d = float(coord_str[1:4])
         m = float(coord_str[4:6])
         s = float(coord_str[6:8])
 
     decimal = d + (m / 60.0) + (s / 3600.0)
+    # Si la direcció és Sud o Oest (West), la coordenada decimal ha de ser negativa
     if direccio == 'S' or direccio == 'W':
         decimal = -decimal
     return decimal
-
 
 def LoadAirports(Airports):
     llista_aeroports = []
@@ -55,7 +61,7 @@ def LoadAirports(Airports):
         linies = f.readlines()
         f.close()
 
-        n = 1
+        n = 1 #Saltem la primera linea que no té informació
         while n < len(linies):
             parts = linies[n].split(" ")
             if len(parts) >= 3:
@@ -76,6 +82,7 @@ def LoadAirports(Airports):
 llista = LoadAirports("Airports.txt")
 
 def SaveSchengenAirports(airports, filename):
+    # Filtra i guarda en un nou fitxer només aquells aeroports que són Schengen
     if len(airports) == 0:
         return -1
 
