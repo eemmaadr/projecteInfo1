@@ -295,12 +295,14 @@ def FreeGate(bcn,id):
             k = 0
             while k < len(area.gates) and not found:
                 gate = area.gates[k]
-                if gate.id == "-":
+                if gate.id == id:
+                    gate.ocupat = False
+                    gate.id = "-"
                     found = True
 
-            k += 1
-        j +=1
-    i += 1
+                k += 1
+            j +=1
+        i += 1
 
     if not found: #Si no s'ha trobat cap avió, indiquem error
         return -1
@@ -313,7 +315,7 @@ def AssignGatesAtTime(bcn, aircrafts, time):
     contador_no_assig = 0
     i = 0
     while i<len(aircrafts):
-        ac = aicrafts[i]
+        ac = aircrafts[i]
         # Si l'avió té dades de sortida i ja hauria d'haver marxat
         if ac.departure_time != "00:00" and ac.departure_time <= time:
             FreeGate(bcn,ac.aircraft_id)
@@ -335,8 +337,64 @@ def AssignGatesAtTime(bcn, aircrafts, time):
 
 
 # PLOT EXTRA
+def PercentatgeDOcupacio(bcn,aircrafts):
+    import tkinter as tk
+    # Mostra el percentatge d'ocupació de cada àrea d'embarcament per cada hora del dia.
+    areas_objects = []
+    areas_noms = []
+    for t in bcn.terminals:
+        for ba in t.boardingareas:
+            areas_objects.append(ba)
+            areas_noms.append(f"{t.name} - {ba.name}")
 
+    # Fem una matriu de 24 columnes (hores del dia)
+    mapa_data = []
+    for _ in range(len(areas_objects)):
+        mapa_data.append([0.0] * 24)
 
+    hores = []
+    for h in range(24):
+        time_str = f"{h:02d}:00"
+        hores.append(time_str)
+
+        for t in bcn.terminals:
+            for ba in t.boardingareas:
+                for g in ba.gates:
+                    g.ocupat = False
+
+        print(f"-> Intentando procesar la hora: {time_str}...", end="")
+        # Actualitzem l'estat de les portes per a aquesta hora específica
+        AssignGatesAtTime(bcn, aircrafts, time_str)
+        print(" ¡Completada con éxito!")
+
+        # Calculem el percentatge d'ocupació de cada àrea en aquest moment
+        for idx, ba in enumerate(areas_objects):
+            contador_ocupat = 0
+            for g in ba.gates:
+                if g.ocupat:
+                    contador_ocupat += 1
+
+            # Percentatge: (portes ocupades / total de portes) * 100
+            if len(ba.gates) > 0:
+                percentatge = (contador_ocupat / len(ba.gates)) * 100
+                mapa_data[idx][h] = percentatge
+
+    fig, ax = pyplot.subplots(figsize=(14, 8))
+    im = ax.imshow(mapa_data, cmap='YlOrRd', aspect='auto')
+    cbar = ax.figure.colorbar(im, ax=ax)
+    cbar.ax.set_ylabel("Percentatge d'Ocupació (%)", rotation=-90, va="bottom")
+
+    ax.set_xticks(range(24))
+    ax.set_xticklabels(range(24))
+    ax.set_yticks(range(len(areas_noms)))
+    ax.set_yticklabels(areas_noms)
+
+    pyplot.title("Mapa de Calor d'Estrès de les Àrees d'Embarcament (LEBL)", fontsize=16, pad=20)
+    pyplot.xlabel("Hora del dia (hh:00)")
+    pyplot.ylabel("Àrees d'Embarcament")
+
+    pyplot.tight_layout()
+    pyplot.show()
 
 if __name__ == "__main__":
 

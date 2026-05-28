@@ -5,7 +5,7 @@ from airport import *
 import aircraft as ac
 from matplotlib import pyplot
 import LEBL
-from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure
+from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure, PercentatgeDOcupacio
 
 
 class AirportApp:
@@ -33,14 +33,14 @@ class AirportApp:
         tk.Button(self.root, text="Google Earth (Tots)", command=self.make_map_v2).pack(fill='x', padx=20)
         tk.Button(self.root, text="Google Earth (Llarga Distància)", command=self.make_map_long_v2).pack(fill='x', padx=20)
 
-
-
         tk.Label(self.root, text="VERSIÓN 3: GESTIÓN DE PUERTAS", fg="orange").pack(pady=(10, 0))
         tk.Button(self.root, text="Carregar Estructura LEBL", command=self.load_lebl_v3).pack(fill='x', padx=20)
         tk.Button(self.root, text="Assignar Portes a Arribades", command=self.assign_gates_v3).pack(fill='x', padx=20)
         tk.Button(self.root, text="Mapa d'Ocupació de Portes", command=self.show_map).pack(fill='x', padx=20)
 
-
+#PLOTS EXTRES
+        tk.Label(self.root, text="PLOTS EXTRES", fg="red").pack(pady=(10, 0))
+        tk.Button(self.root, text="Percentatge d'Ocupació", command=self.show_occupancy_percentage).pack(fill='x', padx=20)
 
     def eliminar_cercanos(self):
         if not self.vuelos:
@@ -143,6 +143,13 @@ class AirportApp:
             return
         PlotGateOccupancy(self.lebl_ap)
 
+    def show_occupancy_percentage(self):
+        if not self.lebl_ap or not self.vuelos:
+            messagebox.showwarning("Atenció", "Cal carregar l'aeroport (V3) i els vols (V2) primer.")
+            return
+
+        # Llamamos a la función importada de LEBL.py pasando la estructura y los vuelos
+        PercentatgeDOcupacio(self.lebl_ap, self.vuelos)
 
 
 if __name__ == "__main__":
