@@ -398,14 +398,7 @@ def PercentatgeDOcupacio(bcn,aircrafts):
 
 
 def PlotCongestionRisk(bcn, aircrafts):
-    '''
-    Mostra el risc de congestió de l'aeroport durant el dia.
-
-    El risc es calcula segons:
-    avions arribant / portes disponibles
-    '''
-
-    if len(aircrafts) == 0:
+n(aircrafts) == 0:
         print("Error: no hi ha vols")
         return
 
