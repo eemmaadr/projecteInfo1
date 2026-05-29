@@ -396,6 +396,90 @@ def PercentatgeDOcupacio(bcn,aircrafts):
     pyplot.tight_layout()
     pyplot.show()
 
+
+def PlotCongestionRisk(bcn, aircrafts):
+    '''
+    Mostra el risc de congestió de l'aeroport durant el dia.
+
+    El risc es calcula segons:
+    avions arribant / portes disponibles
+    '''
+
+    if len(aircrafts) == 0:
+        print("Error: no hi ha vols")
+        return
+
+    hores = []
+    risc = []
+
+    # Comptar totes les gates
+    total_gates = 0
+
+    t = 0
+    while t < len(bcn.terminals):
+
+        terminal = bcn.terminals[t]
+
+        a = 0
+        while a < len(terminal.boardingareas):
+
+            area = terminal.boardingareas[a]
+
+            total_gates += len(area.gates)
+
+            a += 1
+
+        t += 1
+
+    # Analitzar cada hora
+    hora = 0
+
+    while hora < 24:
+
+        arribades = 0
+
+        i = 0
+        while i < len(aircrafts):
+
+            aircraft = aircrafts[i]
+
+            if aircraft.scheduled_time != "":
+                temps = aircraft.scheduled_time.split(":")
+                h = int(temps[0])
+
+                if h == hora:
+                    arribades += 1
+
+            i += 1
+
+        # Càlcul del risc (%)
+        risk_value = (arribades / total_gates) * 100
+
+        hores.append(hora)
+        risc.append(risk_value)
+
+        hora += 1
+
+    # Crear gràfic
+    plt.figure(figsize=(12, 6))
+
+    plt.plot(hores, risc, marker='o')
+
+    # Zones de risc
+    plt.axhspan(0, 30, alpha=0.2)
+    plt.axhspan(30, 60, alpha=0.2)
+    plt.axhspan(60, 100, alpha=0.2)
+
+    plt.xlabel("Hour of day")
+    plt.ylabel("Congestion Risk (%)")
+    plt.title("Airport Congestion Risk During the Day")
+
+    plt.xticks(range(0, 24))
+
+    plt.grid(True)
+
+    plt.show()
+
 if __name__ == "__main__":
 
     meu_ap = BarcelonaAp("LEBL")

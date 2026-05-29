@@ -5,7 +5,7 @@ from airport import *
 import aircraft as ac
 from matplotlib import pyplot
 import LEBL
-from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure, PercentatgeDOcupacio
+from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure, PercentatgeDOcupacio, PlotCongestionRisk
 
 
 class AirportApp:
@@ -41,6 +41,7 @@ class AirportApp:
 #PLOTS EXTRES
         tk.Label(self.root, text="PLOTS EXTRES", fg="red").pack(pady=(10, 0))
         tk.Button(self.root, text="Percentatge d'Ocupació", command=self.show_occupancy_percentage).pack(fill='x', padx=20)
+        tk.Button(root, text="Congestion Risk", command=self.ShowCongestionRisk).pack(fill='x', padx=20)
 
     def eliminar_cercanos(self):
         if not self.vuelos:
@@ -151,6 +152,11 @@ class AirportApp:
         # Llamamos a la función importada de LEBL.py pasando la estructura y los vuelos
         PercentatgeDOcupacio(self.lebl_ap, self.vuelos)
 
+    def ShowCongestionRisk(self):
+        if not self.lebl_ap:
+            messagebox.showwarning("Atenció", "Carrega els vols primer.")
+            return
+        PlotCongestionRisk(self.lebl_ap, self.vuelos)
 
 if __name__ == "__main__":
     app_root = tk.Tk()
