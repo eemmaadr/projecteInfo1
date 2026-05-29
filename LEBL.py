@@ -398,7 +398,8 @@ def PercentatgeDOcupacio(bcn,aircrafts):
 
 
 def PlotCongestionRisk(bcn, aircrafts):
-n(aircrafts) == 0:
+
+    if len(aircrafts) == 0:
         print("Error: no hi ha vols")
         return
 
