@@ -41,7 +41,7 @@ class AirportApp:
 #PLOTS EXTRES
         tk.Label(self.root, text="PLOTS EXTRES", fg="red").pack(pady=(10, 0))
         tk.Button(self.root, text="Percentatge d'Ocupació", command=self.show_occupancy_percentage).pack(fill='x', padx=20)
-        tk.Button(root, text="Congestion Risk", command=self.ShowCongestionRisk).pack(fill='x', padx=20)
+        tk.Button(root, text="Risc de congestió", command=self.ShowCongestionRisk).pack(fill='x', padx=20)
 
     def eliminar_cercanos(self):
         if not self.vuelos:
