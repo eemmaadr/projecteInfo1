@@ -207,6 +207,49 @@ def LoadDepartures(filename):
         error = -1
     return departures_list, error
 
+def MergeMovements(arrivals, departures):
+    if len(arrivals) == 0 or len(departures) == 0:
+        return [], -1
+    merged = []            # vectores
+    departures_used = []
+    for arrival in arrivals:     #ponemos clases
+
+        aircraft = Aircraft()
+        aircraft.aircraft_id = arrival.aircraft_id
+        aircraft.airline = arrival.airline
+        aircraft.origin = arrival.origin
+        aircraft.scheduled_time = arrival.scheduled_time
+
+        for departure in departures:
+            if departure in departures_used:     #si está ocupado pasamos a la siguiente
+                continue
+            if departure.aircraft_id == arrival.aircraft_id:    #comprovar que es el avión correcto
+                arr_h, arr_m = map(int, arrival.scheduled_time.split(":"))
+                dep_h, dep_m = map(int, departure.departure_time.split(":"))
+                arr_minutes = arr_h * 60 + arr_m     #lo paso aminutos por comodidad
+                dep_minutes = dep_h * 60 + dep_m
+                if arr_minutes < dep_minutes:    #Comprobar que la llegada es antes que la salida
+                    aircraft.destination = departure.destination
+                    aircraft.departure_time = departure.departure_time
+                    departures_used.append(departure)
+                    break   #no hace falta seguir
+        merged.append(aircraft)
+
+    for departure in departures:    # la parte de los de noche
+
+        if departure not in departures_used:
+            merged.append(departure)
+
+    return merged, 0
+
+def NightAircraft(aircrafts):
+    if len(aircrafts) == 0:
+        return [], -1
+    night = []                  #creamos el vector de vuelos noche
+    for aircraft in aircrafts:
+        if aircraft.destination != "" and aircraft.origin == "":    #si no tiene destino o no tiene llegada lo mete, ya que tiene que estar ahí
+            night.append(aircraft)          #es un append, añadir al final del vector
+    return night, 0                         #devuelve el vector
 
 if __name__ == "__main__":
 
