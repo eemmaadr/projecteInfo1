@@ -1,7 +1,7 @@
 import math
 import matplotlib.pyplot as plt
 from airport import LoadAirports, IsSchengenAirport
-
+from tkinter import messagebox
 
 class Aircraft:
     def __init__(self, aircraft_id="", airline="", origin="", scheduled_time="", destination="", departure_time=""):
@@ -250,6 +250,60 @@ def NightAircraft(aircrafts):
         if aircraft.destination != "" and aircraft.origin == "":    #si no tiene destino o no tiene llegada lo mete, ya que tiene que estar ahí
             night.append(aircraft)          #es un append, añadir al final del vector
     return night, 0                         #devuelve el vector
+
+
+def TimeToMinutes(time_str):
+
+    if not time_str or time_str == "-" or time_str == "00:00" or time_str == 0:
+        return 0
+    try:
+        parts = time_str.split(':')
+        #  assegurem que tenim hores i minuts [1]
+        return int(parts[0]) * 60 + int(parts[1])
+    except (ValueError, IndexError):
+        return 0
+
+
+def PlotAverageStayTime(aircrafts):
+
+    if not aircrafts:
+        messagebox.showerror("Error", "No hi ha dades de vols per generar estadístiques.")
+        return
+
+    stats = {}
+
+    for ac in aircrafts:
+        if hasattr(ac, 'scheduled_time') and hasattr(ac, 'departure_time'):
+            if ac.scheduled_time != "-" and ac.departure_time != "-":
+                t_arribada = TimeToMinutes(ac.scheduled_time)
+                t_sortida = TimeToMinutes(ac.departure_time)
+                if t_sortida < t_arribada: # CÀLCUL AMB CANVI DE DIA:
+                    t_sortida += 24 * 60
+                durada = t_sortida - t_arribada
+                # FILTRE
+                if 30 < durada < 700:
+                    if ac.airline not in stats:
+                        stats[ac.airline] = [0, 0]  # [suma_minuts, comptador]
+                    stats[ac.airline][0] += durada
+                    stats[ac.airline][1] += 1
+
+    # Preparació dades
+    if not stats:
+        messagebox.showwarning("Atenció", "No s'han trobat vols amb dades compatibles.")
+        return
+
+    aerolinies = list(stats.keys())
+    mitjanes = [val[0] / val[1] for val in stats.values()]
+
+    # Visualització
+    plt.figure(figsize=(10, 6))
+    plt.bar(aerolinies, mitjanes, color='orange', edgecolor='black')
+    plt.title("Temps d'Estada Mitjà per Aerolínia (Minuts)")
+    plt.xlabel("Codi ICAO")
+    plt.ylabel("Temps mitjà")
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
+
 
 if __name__ == "__main__":
 

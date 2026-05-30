@@ -123,7 +123,7 @@ def PlotAirports(airports):
     pyplot.show()
 
 
-def MapAirports(airports):#hola
+def MapAirports(airports):
     f = open("airports.kml", "w")
 
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n')

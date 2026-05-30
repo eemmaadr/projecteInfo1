@@ -1,9 +1,9 @@
 import matplotlib.pyplot as pyplot
 import math
 import os
-import matplotlib.pyplot as plt
-from airport import IsSchengenAirport
 
+from airport import IsSchengenAirport
+#Definim les clases per poder desnevolupar el codig
 class BarcelonaAp:
     def __init__(self,code):
         self.code = code
@@ -115,7 +115,7 @@ def SearchTerminal(bcn, name):
 
 
 
-#hola
+
 def AssignGate(bcn, aircraft):
 
     terminal_name = SearchTerminal(bcn, aircraft.airline)   #Busca terminal de la aerolínea
@@ -228,7 +228,7 @@ def PlotGateOccupancy(bcn):
 
             for index, g in enumerate(ba.gates):
                 if g.ocupat is True or g.id != "-":
-                    color_porta = 'r'
+                    color_porta = 'red'
                 else:
                     color_porta = 'green'
 
@@ -268,7 +268,7 @@ def PlotGateOccupancy(bcn):
     pyplot.axis('off')
     pyplot.tight_layout()
     pyplot.show()
-
+    print("DEBUG: Estic pintant aquest aeroport:", bcn)
 def AssignNightGates(bcn, aircrafts):
     # Assigna una porta de l'aeroport a cada avió de la llista (aircrafts) que sigui només de sortida (night aircraft)
     if len(aircrafts) == 0:
@@ -473,6 +473,8 @@ def PlotCongestionRisk(bcn, aircrafts):
     plt.grid(True)
 
     plt.show()
+
+
 
 if __name__ == "__main__":
 
