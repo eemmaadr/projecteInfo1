@@ -56,23 +56,22 @@ class AirportApp:
         #  COLUMNA ESQUERRA
         #Versio 1
         frame1 = tk.LabelFrame(left_col, text="VERSIÓ 1 · AEROPUERTOS", font=("Segoe UI", 10, "bold"),bg=CARD_BG, fg="#1565C0",   padx=10,  pady=10  )
-
         frame1.pack(fill="both", expand=True, pady=10)
 
+        # Botons versio 1
         tk.Button(frame1, text="Carregar Airports", command=self.load, font=BTN_FONT).pack(fill='x', pady=2)
-        tk.Button(frame1, text="Actualitzar Schengen", command=self.apply_schengen, font=BTN_FONT).pack(fill='x',
-                                                                                                        pady=2)
+        tk.Button(frame1, text="Actualitzar Schengen", command=self.apply_schengen, font=BTN_FONT).pack(fill='x',pady=2)
         tk.Button(frame1, text="Mostrar Gràfic Schengen", command=self.draw_plot, font=BTN_FONT).pack(fill='x', pady=2)
         tk.Button(frame1, text="Google Earth", command=self.make_map, font=BTN_FONT).pack(fill='x', pady=2)
+
         #Versio 3
         frame3 = tk.LabelFrame( left_col,  text="VERSIÓ 3 · GESTIÓN DE PUERTAS",font=("Segoe UI", 10, "bold"),  bg=CARD_BG,   fg="#EF6C00",  padx=10,  pady=10 )
-
-
         frame3.pack(fill="both", expand=True, pady=10)
 
+
+        # Botons versio 3
         tk.Button(frame3, text="Carregar LEBL", command=self.load_lebl_v3, font=BTN_FONT).pack(fill='x', pady=2)
-        tk.Button(frame3, text="Assignar Portes a Arribades", command=self.assign_gates_v3, font=BTN_FONT).pack(
-            fill='x', pady=2)
+        tk.Button(frame3, text="Assignar Portes a Arribades", command=self.assign_gates_v3, font=BTN_FONT).pack( fill='x', pady=2)
         tk.Button(frame3, text="Mapa d'Ocupació de Portes", command=self.show_map, font=BTN_FONT).pack(fill='x', pady=2)
 
         # COLUMNA DRETA
@@ -80,45 +79,38 @@ class AirportApp:
         frame2 = tk.LabelFrame(right_col, text="VERSIÓ 2 · VUELOS",font=("Segoe UI", 10, "bold"), bg=CARD_BG,  fg="#2E7D32",padx=10,  pady=10  )
 
         frame2.pack(fill="both", expand=True, pady=10)
-
+        # Botons versio 2
         tk.Button(frame2, text="Carregar Arrivals", command=self.load_arrivals_v2, font=BTN_FONT).pack(fill='x', pady=2)
-        tk.Button(frame2, text="Gràfic Arribades (Hores)", command=self.PlotArrivals, font=BTN_FONT).pack(fill='x',
-                                                                                                          pady=2)
+        tk.Button(frame2, text="Gràfic Arribades (Hores)", command=self.PlotArrivals, font=BTN_FONT).pack(fill='x', pady=2)
         tk.Button(frame2, text="Gràfic Aerolínies", command=self.PlotAirlines, font=BTN_FONT).pack(fill='x', pady=2)
-        tk.Button(frame2, text="Gràfic Schengen (Apilat)", command=self.PlotFlightsType, font=BTN_FONT).pack(fill='x',
-                                                                                                             pady=2)
+        tk.Button(frame2, text="Gràfic Schengen (Apilat)", command=self.PlotFlightsType, font=BTN_FONT).pack(fill='x',                                                                                              pady=2)
         tk.Button(frame2, text="Google Earth (Tots)", command=self.make_map_v2, font=BTN_FONT).pack(fill='x', pady=2)
+
+
         #versio 4
         frame4 = tk.LabelFrame( right_col, text="VERSIÓ 4 · SIMULACIÓ", font=("Segoe UI", 10, "bold"),bg=CARD_BG, fg="#6A1B9A",  padx=10,  pady=10)
-
-
         frame4.pack(fill="both", expand=True, pady=10)
 
-        tk.Button(frame4, text="Carregar Sortides", command=self.gui_load_departures_v4, font=BTN_FONT).pack(fill='x',
-                                                                                                             pady=2)
-        tk.Button(frame4, text="Fusionar Moviments", command=self.gui_merge_movements_v4, font=BTN_FONT).pack(fill='x',
-                                                                                                              pady=2)
-
+        #Botons versio 4
+        tk.Button(frame4, text="Carregar Sortides", command=self.gui_load_departures_v4, font=BTN_FONT).pack(fill='x',  pady=2)
+        tk.Button(frame4, text="Fusionar Moviments", command=self.gui_merge_movements_v4, font=BTN_FONT).pack(fill='x',     pady=2)
         tk.Label(frame4, text="Hora de simulació (hh:00)", bg=CARD_BG).pack(pady=(8, 0))
 
         self.hora_var = tk.StringVar(value="08:00")
         tk.Entry(frame4, textvariable=self.hora_var, justify='center', font=("Segoe UI", 10)).pack(fill='x', pady=5)
+        tk.Button(frame4, text="Assignar Portes a l'Hora Triada", command=self.assignar_v4, bg="#E3F2FD").pack(fill='x',                                                                                                  pady=3)
+        tk.Button(frame4, text="Simular (Assignar Portes)", command=self.mostrar_mapa_v4, bg="#6A1B9A",fg="white").pack(fill='x', pady=3)
 
-        tk.Button(frame4, text="Assignar Portes a l'Hora Triada", command=self.assignar_v4, bg="#E3F2FD").pack(fill='x',
-                                                                                                               pady=3)
-        tk.Button(frame4, text="Simular (Assignar Portes)", command=self.mostrar_mapa_v4, bg="#6A1B9A",
-                  fg="white").pack(fill='x', pady=3)
+
+
         #Polts extres
         frame5 = tk.LabelFrame( right_col,text="PLOTS EXTRES",  font=("Segoe UI", 10, "bold"), bg=CARD_BG,fg="#C62828",  padx=10,  pady=10  )
-
         frame5.pack(fill="both", expand=True, pady=10)
 
-        tk.Button(frame5, text="Percentatge d'Ocupació", command=self.show_occupancy_percentage, font=BTN_FONT).pack(
-            fill='x', pady=2)
-        tk.Button(frame5, text="Estadistica de estada", command=self.executar_plot_estada, font=BTN_FONT).pack(fill='x',
-                                                                                                               pady=2)
-        tk.Button(frame5, text="Risc de Congestió", command=self.show_congestion_risk, font=BTN_FONT).pack(fill='x',
-                                                                                                           pady=2)
+        # Botons plots extres
+        tk.Button(frame5, text="Percentatge d'Ocupació", command=self.show_occupancy_percentage, font=BTN_FONT).pack(fill='x', pady=2)
+        tk.Button(frame5, text="Estadistica de estada", command=self.executar_plot_estada, font=BTN_FONT).pack(fill='x',pady=2)
+        tk.Button(frame5, text="Risc de Congestió", command=self.show_congestion_risk, font=BTN_FONT).pack(fill='x',pady=2)
 
 
 
