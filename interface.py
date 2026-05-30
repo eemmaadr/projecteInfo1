@@ -5,7 +5,7 @@ from airport import *
 import aircraft as ac
 from matplotlib import pyplot
 import LEBL
-from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure, PercentatgeDOcupacio, AssignGatesAtTime
+from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure, PercentatgeDOcupacio, AssignGatesAtTime, PlotCongestionRisk
 from aircraft import LoadDepartures, MergeMovements, NightAircraft, PlotAverageStayTime
 import copy
 
@@ -13,7 +13,7 @@ class AirportApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Gestor Aeroports")
-        self.root.geometry("350x700")
+        self.root.geometry("350x750")
 
         self.airports = []
         self.vuelos = []
@@ -58,6 +58,8 @@ class AirportApp:
         tk.Label(self.root, text="PLOTS EXTRES", fg="red").pack(pady=(10, 0))
         tk.Button(self.root, text="Percentatge d'Ocupació", command=self.show_occupancy_percentage).pack(fill='x', padx=20)
         tk.Button(self.root, text="Estadistica de estada", command=self.executar_plot_estada).pack(fill='x', padx=20)
+        tk.Button(self.root, text="Risc de Congestió", command=self.show_congestion_risk).pack(fill='x', padx=20)
+
 
     def eliminar_cercanos(self):
         if not self.vuelos:
@@ -254,6 +256,19 @@ class AirportApp:
                             f"Estadístiques del sistema:\n"
                             f"- Portes Ocupades (Vermell): {ocupades_reals}\n"
                             f"- Portes Lliures (Verd): {total - ocupades_reals}")
+
+    def show_congestion_risk(self):
+
+        if not self.lebl_ap:
+            messagebox.showwarning("Atenció","Cal carregar l'aeroport primer.")
+            return
+
+        if not self.vols_totals:
+            messagebox.showwarning("Atenció","Cal fusionar els moviments primer.")
+            return
+
+        PlotCongestionRisk(self.lebl_ap, self.vols_totals)
+
 if __name__ == "__main__":
     app_root = tk.Tk()
     AirportApp(app_root)

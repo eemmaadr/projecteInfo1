@@ -402,12 +402,9 @@ def PlotCongestionRisk(bcn, aircrafts):
     if len(aircrafts) == 0:
         print("Error: no hi ha vols")
         return
-
     hores = []
-    risc = []
-
-    # Comptar totes les gates
-    total_gates = 0
+    risc = []               #vectors
+    total_gates = 0         # Comptar totes les gates
 
     t = 0
     while t < len(bcn.terminals):
@@ -425,8 +422,7 @@ def PlotCongestionRisk(bcn, aircrafts):
 
         t += 1
 
-    # Analitzar cada hora
-    hora = 0
+    hora = 0            # Analitzar cada hora
 
     while hora < 24:
 
@@ -446,8 +442,7 @@ def PlotCongestionRisk(bcn, aircrafts):
 
             i += 1
 
-        # Càlcul del risc (%)
-        risk_value = (arribades / total_gates) * 100
+        risk_value = (arribades / total_gates) * 100        # Càlcul del risc (%)
 
         hores.append(hora)
         risc.append(risk_value)
@@ -455,24 +450,24 @@ def PlotCongestionRisk(bcn, aircrafts):
         hora += 1
 
     # Crear gràfic
-    plt.figure(figsize=(12, 6))
+    pyplot.figure(figsize=(12, 6))
 
-    plt.plot(hores, risc, marker='o')
+    pyplot.plot(hores, risc, marker='o')
 
     # Zones de risc
-    plt.axhspan(0, 30, alpha=0.2)
-    plt.axhspan(30, 60, alpha=0.2)
-    plt.axhspan(60, 100, alpha=0.2)
+    pyplot.axhspan(0, 30, alpha=0.2)
+    pyplot.axhspan(30, 60, alpha=0.2)
+    pyplot.axhspan(60, 100, alpha=0.2)
 
-    plt.xlabel("Hour of day")
-    plt.ylabel("Congestion Risk (%)")
-    plt.title("Airport Congestion Risk During the Day")
+    pyplot.xlabel("Hour of day")
+    pyplot.ylabel("Congestion Risk (%)")
+    pyplot.title("Airport Congestion Risk During the Day")
 
-    plt.xticks(range(0, 24))
+    pyplot.xticks(range(0, 24))
 
-    plt.grid(True)
+    pyplot.grid(True)
 
-    plt.show()
+    pyplot.show()
 
 
 
