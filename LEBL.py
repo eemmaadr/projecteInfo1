@@ -3,7 +3,7 @@ import math
 import os
 
 from airport import IsSchengenAirport
-#Definim les clases per poder desnevolupar el codig
+#Definim les clases per poder desnevolupar el codi
 class BarcelonaAp:
     def __init__(self,code):
         self.code = code
@@ -161,14 +161,11 @@ def SetGates(area, init_gate, end_gate, prefix):
 def IsAirlineInTerminal(terminal, name):
 
     if name == "" or name is None:
-        return False, -1
+        return False
 
     if not terminal.airlines:
          return False
-    if name in terminal.airlines:
-     return True
-    else:
-        return False
+    return name in terminal.airlines
 
 def GateOccupancy(bcn):
     llista_estat = []
@@ -269,6 +266,8 @@ def PlotGateOccupancy(bcn):
     pyplot.tight_layout()
     pyplot.show()
     print("DEBUG: Estic pintant aquest aeroport:", bcn)
+
+
 def AssignNightGates(bcn, aircrafts):
     # Assigna una porta de l'aeroport a cada avió de la llista (aircrafts) que sigui només de sortida (night aircraft)
     if len(aircrafts) == 0:
@@ -277,9 +276,10 @@ def AssignNightGates(bcn, aircrafts):
     i = 0
     while i<len(aircrafts):
         aircraft_actual = aircrafts[i]
-        if aircraft_actual.origin == "-" and aircraft_actual == "00:00":
+        if (aircraft_actual.origin == "" or aircraft_actual.origin == "-") and aircraft_actual.departure_time != "":
             AssignGate(bcn,aircraft_actual)
         i += 1
+    return 0
 
 def FreeGate(bcn,id):
     # Busca l'avió amb l'id especificat en totes les portes de l'aeroport. Si el troba, allibera la porta. Si no, retorna un codi d'error.
@@ -317,7 +317,7 @@ def AssignGatesAtTime(bcn, aircrafts, time):
     while i<len(aircrafts):
         ac = aircrafts[i]
         # Si l'avió té dades de sortida i ja hauria d'haver marxat
-        if ac.departure_time != "00:00" and ac.departure_time <= time:
+        if ac.departure_time != "" and ac.departure_time != "-" and ac.departure_time == time:
             FreeGate(bcn,ac.aircraft_id)
         i += 1
 
@@ -326,7 +326,7 @@ def AssignGatesAtTime(bcn, aircrafts, time):
     while j<len(aircrafts):
         ac = aircrafts[j]
         # Comprovem si l'avió aterra dins d'aquesta hora
-        if ac.scheduled_time != "00:00" and ac.scheduled_time[0:2] == hora_actual:
+        if ac.scheduled_time != "" and ac.scheduled_time != "-" and ac.scheduled_time[0:2] == hora_actual:
             resultat = AssignGate(bcn,ac)
 
         # Si AssignGate retorna un codi d'error (-1), significa que l'aeroport està ple
@@ -361,6 +361,7 @@ def PercentatgeDOcupacio(bcn,aircrafts):
             for ba in t.boardingareas:
                 for g in ba.gates:
                     g.ocupat = False
+                    g.id = "-"
 
         print(f"-> Intentando procesar la hora: {time_str}...", end="")
         # Actualitzem l'estat de les portes per a aquesta hora específica
@@ -442,7 +443,7 @@ def PlotCongestionRisk(bcn, aircrafts):
 
             i += 1
 
-        risk_value = (arribades / total_gates) * 100        # Càlcul del risc (%)
+        risk_value = (arribades / total_gates) * 100 if total_gates > 0 else 0 # Càlcul del risc (%)
 
         hores.append(hora)
         risc.append(risk_value)

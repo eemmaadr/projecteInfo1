@@ -17,20 +17,25 @@ class Aircraft:
 def LoadArrivals(Arrivals):
     arrivalsList = []
     try:
-        with open(Arrivals, "r") as file:
-            next(file)
-            for line in file:
-                parts = line.strip().split()
-                if len(parts) != 4: continue
+        f = open(Arrivals, "r")
+        linies = f.readlines()
+        f.close()
 
-
-                time_str = parts[2]
-                try:
-                    h, m = map(int, time_str.split(':'))
-                    if not (0 <= h <= 23 and 0 <= m <= 59): continue
-                except:
-                    continue
-                arrivalsList.append(Aircraft(parts[0], parts[3], parts[1], parts[2]))
+        n = 1
+        while n < len(linies):
+            linea = linies[n].strip()
+            if linea != "":
+                parts = linea.split()
+                if len(parts) == 4:
+                    time_str = parts[2]
+                    if ":" in time_str:
+                        time_parts = time_str.split(':')
+                        h = int(time_parts[0])
+                        m = int(time_parts[1])
+                        if 0 <= h <= 23 and 0 <= m <= 59:
+                            nou_vuelo = Aircraft(parts[0], parts[3], parts[1], parts[2])
+                            arrivalsList.append(nou_vuelo)
+            n += 1
     except FileNotFoundError:
         print("Archivo no encontrado")
     return arrivalsList
@@ -58,6 +63,7 @@ def PlotArrivals(aircrafts):
     plt.title("Freqüència d'aterratges a Barcelona (LEBL)")
     plt.show()
 
+
 def PlotAirlines(aircrafts):
     if len(aircrafts) == 0:
         print("Error: La llista de vols està buida.")
@@ -68,22 +74,32 @@ def PlotAirlines(aircrafts):
     i = 0
     while i < len(aircrafts):
         actual = aircrafts[i].airline
-        found = False
-        j = 0
-        while j < len(aerolinia) and not found:
-            if aerolinia[j] == actual:
-                vols[j] += 1
-                found = True
-            j += 1
-        if not found:
-            aerolinia.append(actual)
-            vols.append(1)
+        if actual != "":
+            found = False
+            j = 0
+            while j < len(aerolinia) and not found:
+                if aerolinia[j] == actual:
+                    vols[j] += 1
+                    found = True
+                j += 1
+            if not found:
+                aerolinia.append(actual)
+                vols.append(1)
         i += 1
+
+    # Hacemos la ventana un poco más ancha para que quepan bien todas
+    plt.figure(figsize=(12, 6))
 
     plt.bar(aerolinia, vols, color='orange')
     plt.xlabel("Aerolínia")
     plt.ylabel("Nombre de vols")
     plt.title("Vols per companyia aèria")
+
+    # CAMBIO AQUÍ: Rotamos las etiquetas 90 grados y bajamos un pelín el tamaño de la letra
+    plt.xticks(rotation=90, fontsize=8)
+
+    # Ajusta automáticamente los márgenes para que no se corten las letras abajo
+    plt.tight_layout()
     plt.show()
 
 def PlotFlightsType(aircrafts):
@@ -96,28 +112,21 @@ def PlotFlightsType(aircrafts):
     i = 0
     while i < len(aircrafts):
         vol = aircrafts[i]
-        llista_schengen = ['LO', 'EB', 'LK', 'LC', 'EK', 'EE', 'EF', 'LF', 'ED', 'LG', 'EH', 'LH', 'BI', 'LI', 'EV', 'EY', 'EL', 'LM', 'EN', 'EP', 'LP', 'LZ', 'LJ', 'LE', 'ES', 'LS']
-        prefix = vol.origin[0:2]
-
-        es_schengen = False
-        j = 0
-        while j < len(llista_schengen):
-            if llista_schengen[j] == prefix:
-                es_schengen = True
-            j += 1
-
-        if es_schengen:
-            Schengen += 1
-
-        else:
-            NoSchengen += 1
+        if vol.origin != "":
+            if IsSchengenAirport(vol.origin):
+                Schengen += 1
+            else:
+                NoSchengen += 1
         i += 1
 
     categories = ['Schengen', 'No Schengen']
     valors = [Schengen, NoSchengen]
-    plt.bar(categories, valors)
+
+    plt.figure(figsize=(8, 6))
+    plt.bar(categories, valors, color=['green', 'red'], edgecolor='black')
     plt.ylabel("Nombre de vols")
     plt.title("Arribades Schengen vs No-Schengen a LEBL")
+    plt.tight_layout()
     plt.show()
 
 def SaveFlights(aircrafts, filename):
@@ -148,20 +157,30 @@ def Haversine(lat1, lon1, lat2, lon2):
 
 def LongDistanceArrivals(aircrafts):
     airports_list = LoadAirports("Airports.txt")
-    airports_dict = {a.code: a for a in airports_list}
-    lebl = airports_dict.get("LEBL")
     res = []
-    if not lebl: return res
+
+    lebl = None
+    i = 0
+    while i < len(airports_list):
+        if airports_list[i].code == "LEBL":
+            lebl = airports_list[i]
+        i += 1
+
+    if lebl is None:
+        return res
+
     for a in aircrafts:
-        if a.origin in airports_dict:
-            ori = airports_dict[a.origin]
-            if Haversine(ori.lat, ori.lon, lebl.lat, lebl.lon) > 2000:
+        orig_ap = None
+        j = 0
+        while j < len(airports_list):
+            if airports_list[j].code == a.origin:
+                orig_ap = airports_list[j]
+            j += 1
+
+        if orig_ap is not None:
+            if Haversine(orig_ap.lat, orig_ap.lon, lebl.lat, lebl.lon) > 2000:
                 res.append(a)
     return res
-
-
-
-
 
 def MapFlights(aircrafts, filename):
     airports_list = LoadAirports("Airports.txt")
@@ -210,10 +229,11 @@ def LoadDepartures(filename):
 def MergeMovements(arrivals, departures):
     if len(arrivals) == 0 or len(departures) == 0:
         return [], -1
+
     merged = []            # vectores
     departures_used = []
-    for arrival in arrivals:     #ponemos clases
 
+    for arrival in arrivals:     #ponemos clases
         aircraft = Aircraft()
         aircraft.aircraft_id = arrival.aircraft_id
         aircraft.airline = arrival.airline
@@ -224,15 +244,15 @@ def MergeMovements(arrivals, departures):
             if departure in departures_used:     #si está ocupado pasamos a la siguiente
                 continue
             if departure.aircraft_id == arrival.aircraft_id:    #comprovar que es el avión correcto
-                arr_h, arr_m = map(int, arrival.scheduled_time.split(":"))
-                dep_h, dep_m = map(int, departure.departure_time.split(":"))
-                arr_minutes = arr_h * 60 + arr_m     #lo paso aminutos por comodidad
-                dep_minutes = dep_h * 60 + dep_m
-                if arr_minutes < dep_minutes:    #Comprobar que la llegada es antes que la salida
-                    aircraft.destination = departure.destination
-                    aircraft.departure_time = departure.departure_time
-                    departures_used.append(departure)
-                    break   #no hace falta seguir
+                if ":" in arrival.scheduled_time and ":" in departure.departure_time:
+                    arr_minutes = TimeToMinutes(arrival.scheduled_time)
+                    dep_minutes = TimeToMinutes(departure.departure_time)
+
+                    if arr_minutes < dep_minutes:
+                        aircraft.destination = departure.destination
+                        aircraft.departure_time = departure.departure_time
+                        departures_used.append(departure)
+                        break  #no hace falta seguir
         merged.append(aircraft)
 
     for departure in departures:    # la parte de los de noche
@@ -270,30 +290,44 @@ def PlotAverageStayTime(aircrafts):
         messagebox.showerror("Error", "No hi ha dades de vols per generar estadístiques.")
         return
 
-    stats = {}
+    aerolinies = []
+    suma_minuts = []
+    comptador_vols = []
 
     for ac in aircrafts:
         if hasattr(ac, 'scheduled_time') and hasattr(ac, 'departure_time'):
             if ac.scheduled_time != "-" and ac.departure_time != "-":
                 t_arribada = TimeToMinutes(ac.scheduled_time)
                 t_sortida = TimeToMinutes(ac.departure_time)
+
                 if t_sortida < t_arribada: # CÀLCUL AMB CANVI DE DIA:
                     t_sortida += 24 * 60
                 durada = t_sortida - t_arribada
+
                 # FILTRE
                 if 30 < durada < 700:
-                    if ac.airline not in stats:
-                        stats[ac.airline] = [0, 0]  # [suma_minuts, comptador]
-                    stats[ac.airline][0] += durada
-                    stats[ac.airline][1] += 1
+                    found = False
+                    idx = 0
+                    while idx < len(aerolinies) and not found:
+                        if aerolinies[idx] == ac.airline:
+                            suma_minuts[idx] += durada
+                            comptador_vols[idx] += 1
+                            found = True
+                        idx += 1
 
-    # Preparació dades
-    if not stats:
+                    if not found:
+                        aerolinies.append(ac.airline)
+                        suma_minuts.append(durada)
+                        comptador_vols.append(1)
+
+    if len(aerolinies) == 0:
         messagebox.showwarning("Atenció", "No s'han trobat vols amb dades compatibles.")
         return
 
-    aerolinies = list(stats.keys())
-    mitjanes = [val[0] / val[1] for val in stats.values()]
+        # Calcular las medias
+    mitjanes = []
+    for k in range(len(aerolinies)):
+        mitjanes.append(suma_minuts[k] / comptador_vols[k])
 
     # Visualització
     plt.figure(figsize=(10, 6))
@@ -304,10 +338,5 @@ def PlotAverageStayTime(aircrafts):
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
-
 if __name__ == "__main__":
-
-    lista = LoadArrivals("Arrivals.txt")
-    if lista:
-        print(f"Test exitoso: {len(lista)} vuelos cargados.")
-        PlotArrivals(lista)
+    pass

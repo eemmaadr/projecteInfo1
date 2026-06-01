@@ -6,7 +6,7 @@ class Airport:
         self.code = code
         self.lat = lat
         self.lon = lon
-        self.Schengen = False
+        self.Schengen = IsSchengenAirport(code)
 
 def IsSchengenAirport(code):
     if code == "":
@@ -15,7 +15,7 @@ def IsSchengenAirport(code):
         'LO', 'EB', 'LK', 'LC', 'EK', 'EE', 'EF', 'LF', 'ED', 'LG', 'EH', 'LH',
         'BI', 'LI', 'EV', 'EY', 'EL', 'LM', 'EN', 'EP', 'LP', 'LZ', 'LJ', 'LE', 'ES', 'LS'
     ]
-    prefix = code[0:2]
+    prefix = code[0:2].upper()
     trobat = False
     i = 0
     while i < len(llista_codis) and not trobat:
@@ -57,14 +57,17 @@ def LoadAirports(Airports):
 
         n = 1
         while n < len(linies):
-            parts = linies[n].split(" ")
-            if len(parts) >= 3:
-                codi = parts[0]
-                lat_dec = _string_to_decimal(parts[1])
-                lon_dec = _string_to_decimal(parts[2])
+            linea = linies[n].strip()
 
-                nou_ap = Airport(codi, lat_dec, lon_dec)
-                llista_aeroports.append(nou_ap)
+            if linea != "":
+                parts = linies[n].split()
+                if len(parts) >= 3:
+                    codi = parts[0]
+                    lat_dec = _string_to_decimal(parts[1])
+                    lon_dec = _string_to_decimal(parts[2])
+
+                    nou_ap = Airport(codi, lat_dec, lon_dec)
+                    llista_aeroports.append(nou_ap)
             n = n + 1
 
     except FileNotFoundError:
@@ -115,11 +118,13 @@ def PlotAirports(airports):
         else:
             ns_count = ns_count + 1
 
-    pyplot.bar(['Airports'], [s_count], color='blue', label='Schengen')
-    pyplot.bar(['Airports'], [ns_count], bottom=[s_count], color='red', label='No Schengen')
-    pyplot.ylabel('Count')
-    pyplot.title('Schengen airports')
-    pyplot.legend()
+    categorias = ['Schengen', 'Non-Schengen']
+    valores = [s_count, ns_count]
+    colores = ['green', 'red']
+
+    pyplot.bar(categorias, valores, color=colores)
+    pyplot.ylabel('Number of Airports')
+    pyplot.title('Schengen vs Non-Schengen Airports')
     pyplot.show()
 
 

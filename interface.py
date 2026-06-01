@@ -3,10 +3,10 @@ from tkinter import messagebox, filedialog
 import os
 from airport import *
 import aircraft as ac
-from matplotlib import pyplot
+from aircraft import LoadDepartures, MergeMovements, NightAircraft, PlotAverageStayTime
+import matplotlib.pyplot as plt
 import LEBL
 from LEBL import PlotGateOccupancy, AssignGate, LoadAirportStructure, PercentatgeDOcupacio, AssignGatesAtTime, PlotCongestionRisk
-from aircraft import LoadDepartures, MergeMovements, NightAircraft, PlotAverageStayTime
 import copy
 
 class AirportApp:
@@ -151,13 +151,13 @@ class AirportApp:
             else:
                 ns_count += 1
 
-        pyplot.figure("Estadístiques Schengen")
-        pyplot.bar(['Airports'], [s_count], color='blue', label='Schengen')
-        pyplot.bar(['Airports'], [ns_count], bottom=[s_count], color='red', label='No Schengen')
-        pyplot.ylabel('Quantitat')
-        pyplot.title('Aeroports Schengen vs No Schengen')
-        pyplot.legend()
-        pyplot.show()
+        plt.figure("Estadístiques Schengen")
+        plt.bar(['Airports'], [s_count], color='green', label='Schengen')
+        plt.bar(['Airports'], [ns_count], bottom=[s_count], color='red', label='No Schengen')
+        plt.ylabel('Quantitat')
+        plt.title('Aeroports Schengen vs No Schengen')
+        plt.legend()
+        plt.show()
 
     def make_map(self):
         MapAirports(self.airports)
