@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 from airport import LoadAirports, IsSchengenAirport
 from tkinter import messagebox
 
+# Hem creat la classe Aircraft amb tots els paràmetres buits per defecte.
+# D'aquesta manera, ens serveix tant per guardar un vol que només té arribada,
+# un que només té sortida, o un moviment complet fusionat.
 class Aircraft:
     def __init__(self, aircraft_id="", airline="", origin="", scheduled_time="", destination="", departure_time=""):
 
@@ -13,7 +16,9 @@ class Aircraft:
         self.destination = destination              #Salida
         self.departure_time = departure_time
 
-
+# Aquí llegim el fitxer d'arribades (Arrivals). Fem una neteja de cadenes i comprovem
+# que cada línia tingui exactament 4 trossos. També mirem que l'hora estigui en format correcte
+# (entre 0 i 23 per a les hores, i 0 i 59 per als minuts) abans de guardar l'objecte a la llista.
 def LoadArrivals(Arrivals):
     arrivalsList = []
     try:
@@ -40,6 +45,9 @@ def LoadArrivals(Arrivals):
         print("Archivo no encontrado")
     return arrivalsList
 
+# Per fer aquest gràfic, hem creat una llista de 24 posicions plenes de zeros (hores_dia).
+# Anem recorrent els vols, extraiem l'hora de l'arribada fent un '.split(":")' i sumem +1
+# a la posició de la llista que correspongui a aquella hora. Després ho pintem tot amb barres blaves.
 def PlotArrivals(aircrafts):
     if len(aircrafts) == 0:
         print("Error: La llista esta buida")
@@ -63,7 +71,10 @@ def PlotArrivals(aircrafts):
     plt.title("Freqüència d'aterratges a Barcelona (LEBL)")
     plt.show()
 
-
+# Aquí anem acumulant quantes vegades surt cada aerolínia. Com que no sabem quines companyies hi ha,
+# si l'aerolínia no s'havia vist abans (found == False), l'afegim a la llista d'aerolínies i posem el seu
+# comptador a 1. Si ja existia, només sumem 1 al seu índex.
+# NOTA EXTRA: Hem configurat la rotació a 90º i 'tight_layout' perquè els codis es puguin llegir bé.
 def PlotAirlines(aircrafts):
     if len(aircrafts) == 0:
         print("Error: La llista de vols està buida.")
@@ -87,21 +98,17 @@ def PlotAirlines(aircrafts):
                 vols.append(1)
         i += 1
 
-    # Hacemos la ventana un poco más ancha para que quepan bien todas
     plt.figure(figsize=(12, 6))
-
     plt.bar(aerolinia, vols, color='orange')
     plt.xlabel("Aerolínia")
     plt.ylabel("Nombre de vols")
     plt.title("Vols per companyia aèria")
-
-    # CAMBIO AQUÍ: Rotamos las etiquetas 90 grados y bajamos un pelín el tamaño de la letra
     plt.xticks(rotation=90, fontsize=8)
-
-    # Ajusta automáticamente los márgenes para que no se corten las letras abajo
     plt.tight_layout()
     plt.show()
 
+# Cridem a la funció del mòdul anterior 'IsSchengenAirport' passant l'origen del vol.
+# Així anem sumant als comptadors de Schengen o No-Schengen per dibuixar les dues barres comparatives.
 def PlotFlightsType(aircrafts):
     if len(aircrafts) == 0:
         print("Error: La llista de vols està buida")
@@ -129,6 +136,9 @@ def PlotFlightsType(aircrafts):
     plt.tight_layout()
     plt.show()
 
+# Funció simple per guardar la llista de vols a un fitxer de text.
+# Si algun paràmetre de l'objecte està completament buit, escrivim dues cometes simples ''
+# per mantenir les columnes ben quadrades i que el fitxer no es deformi.
 def SaveFlights(aircrafts, filename):
     if not aircrafts: return -1
     try:
@@ -144,7 +154,8 @@ def SaveFlights(aircrafts, filename):
     except:
         return -1
 
-
+# Aquí calculem la distància en línia recta entre dues coordenades del planeta (en km).
+# Passem primer els graus a radiants amb 'math.radians' i després apliquem la fórmula matemàtica.
 def Haversine(lat1, lon1, lat2, lon2):
     R = 6371
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
@@ -154,7 +165,9 @@ def Haversine(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
 
-
+# Busquem primer on està l'aeroport de Barcelona (LEBL) a la llista d'aeroports.
+# Després mirem d'on ve cada vol, calculem la distància amb la funció Haversine i,
+# si el resultat és superior a 2000 km, el guardem com un vol de llarga distància.
 def LongDistanceArrivals(aircrafts):
     airports_list = LoadAirports("Airports.txt")
     res = []
@@ -182,6 +195,10 @@ def LongDistanceArrivals(aircrafts):
                 res.append(a)
     return res
 
+# Generem un KML de línies de vol que van des de l'origen fins a Barcelona (LEBL).
+# Per agafar ràpidament les coordenades dels aeroports d'origen hem fet servir un diccionari,
+# que ens estalvia haver de recórrer tota la llista d'aeroports amb un bucle a cada vol.
+# Si el vol prové de Schengen pintem la línia verda, i si ve de fora la pintem vermella.
 def MapFlights(aircrafts, filename):
     airports_list = LoadAirports("Airports.txt")
     airports_dict = {a.code: a for a in airports_list}
@@ -200,6 +217,9 @@ def MapFlights(aircrafts, filename):
                     f'<LineString><coordinates>{ori.lon},{ori.lat},0 {lebl.lon},{lebl.lat},0</coordinates></LineString></Placemark>\n')
         f.write('</Document></kml>')
 
+# Llegim el fitxer de sortides (Departures) per a la Versió 4.
+# Fem servir el truc de posar 'next(file)' per saltar-nos automàticament la primera línia de títols.
+# Guardem l'hora amb el format quadrat de dos dígits usant un format de text f-string (f"{int(h):02d}:{m}").
 def LoadDepartures(filename):
     departures_list = []
     error = 0
@@ -226,6 +246,11 @@ def LoadDepartures(filename):
         error = -1
     return departures_list, error
 
+# Aquí ajuntem els moviments d'arribada i sortida. Recorrem les arribades i busquem si el mateix
+# avió té una sortida programada més tard (convertint les hores a minuts totals).
+# Si té sentit, ajuntem origen i destí al mateix objecte i guardem aquella sortida a 'departures_used'
+# perquè cap altre avió la pugui agafar. Al final del tot, els vols de sortida que hagin quedat sols
+# s'afegeixen directament com a vols independents.
 def MergeMovements(arrivals, departures):
     if len(arrivals) == 0 or len(departures) == 0:
         return [], -1
@@ -262,6 +287,8 @@ def MergeMovements(arrivals, departures):
 
     return merged, 0
 
+# Filtrem quins avions dormen a l'aeroport (avions de nit). Són aquells que tenen una sortida assignada
+# (destination) però que, en canvi, no s'ha registrat cap arribada prèvia des de la base de dades (origin buit).
 def NightAircraft(aircrafts):
     if len(aircrafts) == 0:
         return [], -1
@@ -271,7 +298,8 @@ def NightAircraft(aircrafts):
             night.append(aircraft)          #es un append, añadir al final del vector
     return night, 0                         #devuelve el vector
 
-
+# Funció auxiliar molt pràctica: passa una cadena tipus "HH:MM" a minuts totals de l'estil enters
+# (Multiplicant hores * 60 + minuts) per poder fer restes i comparacions de temps fàcilment.
 def TimeToMinutes(time_str):
 
     if not time_str or time_str == "-" or time_str == "00:00" or time_str == 0:
@@ -283,7 +311,10 @@ def TimeToMinutes(time_str):
     except (ValueError, IndexError):
         return 0
 
-
+# PLOT EXTRA: Calculem el temps mitjà que passa un avió a terra per cada companyia.
+# Si l'hora de sortida és menor que la d'arribada significa que ha passat la nit de canvi de dia,
+# així que sumem 24 hores en minuts (24 * 60) per evitar restes negatives errònies.
+# També filtrem temps absurds (menys de 30 minuts o més de 700 minuts) per netejar les dades corruptes.
 def PlotAverageStayTime(aircrafts):
 
     if not aircrafts:
@@ -330,12 +361,14 @@ def PlotAverageStayTime(aircrafts):
         mitjanes.append(suma_minuts[k] / comptador_vols[k])
 
     # Visualització
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(14, 6))
     plt.bar(aerolinies, mitjanes, color='orange', edgecolor='black')
     plt.title("Temps d'Estada Mitjà per Aerolínia (Minuts)")
     plt.xlabel("Codi ICAO")
     plt.ylabel("Temps mitjà")
     plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.xticks(rotation=90, fontsize=7)
+    plt.tight_layout()
     plt.show()
 
 if __name__ == "__main__":

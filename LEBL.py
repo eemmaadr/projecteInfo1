@@ -3,7 +3,9 @@ import math
 import os
 
 from airport import IsSchengenAirport
-#Definim les clases per poder desnevolupar el codi
+# Definim les quatre classes que ens organitzen l'estructura de l'aeroport per nivells:
+# L'aeroport conté terminals, les terminals contenen àrees d'embarcament (amb les seves companyies),
+# i les àrees contenen les portes d'embarcament (gates).
 class BarcelonaAp:
     def __init__(self,code):
         self.code = code
@@ -24,7 +26,9 @@ class Gate:
         self.ocupat= False
         self.id="-"
 
-
+# Busquem el fitxer corresponent a cada terminal (ex: T1_Airlines.txt).
+# Anem llegint el fitxer línia per línia separant per tabuladors ("\t") per extreure
+# el codi ICAO de cada companyia i guardar-lo a la llista d'aerolínies de la terminal.
 def LoadAirlines(terminal, t_name):
 
     filename = t_name + "_Airlines.txt"     #construimos nombre de archivo con las T
@@ -54,6 +58,10 @@ def LoadAirlines(terminal, t_name):
 
     return 0
 
+# Aquesta funció llegeix la configuració de l'aeroport (Terminals.txt).
+# Primer agafem el codi de l'aeroport i el nombre de terminals totals. Després, amb bucles aniuats,
+# anem llegint cada terminal, creem les seves àrees d'embarcament i en generem les portes
+# cridant a 'SetGates'. Al final ens retorna tot l'arbre d'objectes connectat.
 def LoadAirportStructure(filename):
 
     if not os.path.exists(filename):
@@ -105,7 +113,8 @@ def LoadAirportStructure(filename):
 
     return bcn    #Te da el aeropurto completo
 
-
+# Recorrem les terminals de l'aeroport per buscar quina d'elles opera la companyia que ens demanen.
+# Fem servir la funció auxiliar 'IsAirlineInTerminal' per comprovar la llista.
 def SearchTerminal(bcn, name):
     for terminal in bcn.terminals:    #Recorre terminales
         if IsAirlineInTerminal(terminal, name):    #comprueba
@@ -113,9 +122,10 @@ def SearchTerminal(bcn, name):
 
     return ""
 
-
-
-
+# Assignem una porta lliure a un avió basant-nos en dues regles obligatòries:
+# 1. Que estigui a la terminal assignada a la seva companyia aèria.
+# 2. Que el tipus d'àrea coincideixi amb l'origen (Schengen o non-Schengen).
+# Si trobem una porta buida, la marquem com a ocupada i hi guardem l'ID de l'avió.
 def AssignGate(bcn, aircraft):
 
     terminal_name = SearchTerminal(bcn, aircraft.airline)   #Busca terminal de la aerolínea
@@ -144,6 +154,8 @@ def AssignGate(bcn, aircraft):
 
     return -1
 
+# Generem de manera seqüencial totes les portes d'una àrea des de la porta inicial fins a la final.
+# Els hi donem el nom combinant el prefix de la zona amb el número actual (ex: T1BAAG1).
 def SetGates(area, init_gate, end_gate, prefix):
     if end_gate<= init_gate:
         return -1
@@ -167,6 +179,8 @@ def IsAirlineInTerminal(terminal, name):
          return False
     return name in terminal.airlines
 
+# Recorrem absolutament totes les portes de l'aeroport amb bucles 'while' aniuats
+# per extreure una llista simple de l'estat de cadascuna (nom, si està ocupada i quin avió hi ha).
 def GateOccupancy(bcn):
     llista_estat = []
     i = 0
@@ -184,6 +198,9 @@ def GateOccupancy(bcn):
         i += 1
     return llista_estat
 
+# Aquesta funció dibuixa un plànol gràfic de l'aeroport amb matplotlib.
+# Hem col·locat les àrees i els passadissos calculant coordenades X i Y perquè quedin separats.
+# Pintem quadradets de color vermell si la porta està ocupada (afegint l'ID de l'avió) i verds si està lliure.
 def PlotGateOccupancy(bcn):
     if not bcn or not bcn.terminals:
         print("Error: No hi ha dades de l'aeroport.")
@@ -267,7 +284,8 @@ def PlotGateOccupancy(bcn):
     pyplot.show()
     print("DEBUG: Estic pintant aquest aeroport:", bcn)
 
-
+# Assignem una porta d'embarcament a aquells avions que passen la nit a l'aeroport (Night Aircraft).
+# Sabem quins són perquè el seu origen està buit però tenen hora de sortida establerta.
 def AssignNightGates(bcn, aircrafts):
     # Assigna una porta de l'aeroport a cada avió de la llista (aircrafts) que sigui només de sortida (night aircraft)
     if len(aircrafts) == 0:
@@ -281,6 +299,8 @@ def AssignNightGates(bcn, aircrafts):
         i += 1
     return 0
 
+# Busquem un avió pel seu ID per totes les terminals i àrees. Quan el trobem,
+# buidem la porta restablint l'estat 'ocupat = False' i el nom de l'avió a "-".
 def FreeGate(bcn,id):
     # Busca l'avió amb l'id especificat en totes les portes de l'aeroport. Si el troba, allibera la porta. Si no, retorna un codi d'error.
     found = False
@@ -309,6 +329,10 @@ def FreeGate(bcn,id):
 
     return 1 #Sinó indiquem que s'ha executat correctament
 
+# El motor de la nostra simu horària. Primer llibera les portes de tots els avions que
+# s'enlairen exactament a l'hora triada (time). Després, agafa els avions que aterren dins
+# d'aquella mateixa franja d'hora (comparant els dos primers dígits "hh") i els intenta assignar porta.
+# Si l'aeroport està ple, sumem +1 al comptador de vols sense porta.
 def AssignGatesAtTime(bcn, aircrafts, time):
     #  Actualitza l'estat de les portes de l'aeroport per a una franja horària específica.
     # Primer allibera les portes dels avions que han marxat i després assigna portes als que arriben.
@@ -336,7 +360,10 @@ def AssignGatesAtTime(bcn, aircrafts, time):
     return contador_no_assig
 
 
-# PLOT EXTRA
+# PLOT EXTRA: Dibuixa un mapa de calor (imshow) mostrant com d'estressades estan les àrees.
+# Fem una matriu on les files són les àrees d'embarcament i les columnes són les 24 hores del dia.
+# Executem la simulació per a cada hora de 00:00 a 23:00, calculem el percentatge de portes
+# ocupades que hi ha a cada àrea i omplim la matriu per pintar el gràfic.
 def PercentatgeDOcupacio(bcn,aircrafts):
     import tkinter as tk
     # Mostra el percentatge d'ocupació de cada àrea d'embarcament per cada hora del dia.
@@ -397,7 +424,10 @@ def PercentatgeDOcupacio(bcn,aircrafts):
     pyplot.tight_layout()
     pyplot.show()
 
-
+# PLOT EXTRA: Calculem l'índex de risc de congestió de l'aeroport hora per hora.
+# Primer comptem el total de portes disponibles sumant-les totes.
+# Després mirem quants avions arriben a cada hora i calculem el percentatge (arribades / total_portes) * 100.
+# Pintem una gràfica de línies i marquem zones d'alerta de fons.
 def PlotCongestionRisk(bcn, aircrafts):
 
     if len(aircrafts) == 0:
