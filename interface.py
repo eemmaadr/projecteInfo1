@@ -184,13 +184,13 @@ class AirportApp:
 
     def make_map_v2(self):
         if self.vuelos:
-            ac.MapFlights(self.vuelos, "vols_tots.kml")
+            ac.MapFlights(self.vuelos, "Google Earth/vols_tots.kml")
             messagebox.showinfo("KML", "Creat vols_tots.kml")
 
     def make_map_long_v2(self):
         if self.vuelos:
             vols_llargs = ac.LongDistanceArrivals(self.vuelos)
-            ac.MapFlights(vols_llargs, "vols_llarga_distancia.kml")
+            ac.MapFlights(vols_llargs, "Google Earth/vols_llarga_distancia.kml")
             messagebox.showinfo("KML", f"Creat KML amb {len(vols_llargs)} vols")
 
     def load_lebl_v3(self):
