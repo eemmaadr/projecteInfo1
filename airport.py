@@ -153,7 +153,7 @@ def PlotAirports(airports):
 # Després anem escrivint cada lloc amb un 'for'. A l'etiqueta `<coordinates>` recordem posar
 # primer la longitud i després la latitud, que és com ho demana obligatòriament el format KML.
 def MapAirports(airports):
-    f = open("Files/airports.kml", "w")
+    f = open("airports.kml", "w")
 
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
     f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n')

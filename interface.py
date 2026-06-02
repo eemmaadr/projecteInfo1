@@ -189,7 +189,7 @@ class AirportApp:
             messagebox.showinfo("KML", f"Creat KML amb {len(vols_llargs)} vols")
 
     def load_lebl_v3(self):
-        self.lebl_ap = LoadAirportStructure("Files/Terminals.txt")
+        self.lebl_ap = LoadAirportStructure("Terminals.txt")
         if self.lebl_ap:
             messagebox.showinfo("Info", "Estructura de l'aeroport carregada!")
         else:
@@ -234,7 +234,7 @@ class AirportApp:
     def gui_load_departures_v4(self):
 
         # Crida a la funció obligatòria LoadDepartures
-        self.vols_sortida, error = LoadDepartures("Files/Departures.txt")
+        self.vols_sortida, error = LoadDepartures("Departures.txt")
 
         if error == -1:
             messagebox.showerror("Error de Robustesa", "No s'ha trobat el fitxer Departures.txt")

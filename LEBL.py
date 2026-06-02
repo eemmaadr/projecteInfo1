@@ -206,7 +206,7 @@ def PlotGateOccupancy(bcn):
         print("Error: No hi ha dades de l'aeroport.")
         return
 
-    fig, ax = pyplot.subplots(figsize=(20, 10))
+    fig, ax = pyplot.subplots(figsize=(25, 11))
 
     pos_ba_X = 2
     y_minima_detectada = -26
@@ -214,7 +214,7 @@ def PlotGateOccupancy(bcn):
     for t in bcn.terminals:
         y_base = 0 if "1" in t.name else -15
 
-        largo_barra = len(t.boardingareas) * 8.5
+        largo_barra = len(t.boardingareas) * 15.5
 
         ax.plot([pos_ba_X - 2, pos_ba_X + largo_barra - 4], [y_base, y_base],
                 color='blue', linewidth=6, solid_capstyle='butt')
@@ -271,7 +271,7 @@ def PlotGateOccupancy(bcn):
                 if index % 2 == 1:
                     pos_g_Y -= 1.2
 
-            pos_ba_X += 9.0
+            pos_ba_X += 16.0
 
         pos_ba_X += 3.0
 
