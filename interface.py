@@ -60,6 +60,7 @@ class AirportApp:
 
         # Botons versio 1
         tk.Button(frame1, text="Carregar Airports", command=self.load, font=BTN_FONT).pack(fill='x', pady=2)
+        tk.Button(frame1, text="Eliminar Airports", command=self.eliminate, font=BTN_FONT).pack(fill='x', pady=2)
         tk.Button(frame1, text="Actualitzar Schengen", command=self.apply_schengen, font=BTN_FONT).pack(fill='x',pady=2)
         tk.Button(frame1, text="Mostrar Gràfic Schengen", command=self.draw_plot, font=BTN_FONT).pack(fill='x', pady=2)
         tk.Button(frame1, text="Google Earth", command=self.make_map, font=BTN_FONT).pack(fill='x', pady=2)
@@ -135,6 +136,10 @@ class AirportApp:
     def load(self):
         self.airports = LoadAirports("Airports.txt")
         messagebox.showinfo("Info", "Carregats!")
+
+    def eliminate(self):
+        self.airports = []
+        messagebox.showinfo("Info", "Tots els aeroports han estat eliminats.")
 
     def apply_schengen(self):
         for a in self.airports: SetSchengen(a)

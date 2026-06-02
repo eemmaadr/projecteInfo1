@@ -123,9 +123,9 @@ def RemoveAirport(airports, code):
     while i < len(airports):
         if airports[i].code == code:
             airports.pop(i)
-            return
-        i = i + 1
-    return -1
+            return airports
+        i += 1
+    return airports
 
 # Fem un recompte bàsic de quants aeroports són Schengen i quants no amb un bucle 'for'.
 # Després fem servir 'pyplot.bar' per dibuixar el gràfic.
