@@ -313,7 +313,7 @@ def TimeToMinutes(time_str):
 
 # PLOT EXTRA: Calculem el temps mitjà que passa un avió a terra per cada companyia.
 # Si l'hora de sortida és menor que la d'arribada significa que ha passat la nit de canvi de dia,
-# així que sumem 24 hores en minuts (24 * 60) per evitar restes negatives errònies.
+# així que sumem 24 hores en minuts (24 * 60) per evitar restes negatives errònies. Comprovar si es atribut
 # També filtrem temps absurds (menys de 30 minuts o més de 700 minuts) per netejar les dades corruptes.
 def PlotAverageStayTime(aircrafts):
 
@@ -326,7 +326,7 @@ def PlotAverageStayTime(aircrafts):
     comptador_vols = []
 
     for ac in aircrafts:
-        if hasattr(ac, 'scheduled_time') and hasattr(ac, 'departure_time'):
+
             if ac.scheduled_time != "-" and ac.departure_time != "-":
                 t_arribada = TimeToMinutes(ac.scheduled_time)
                 t_sortida = TimeToMinutes(ac.departure_time)
