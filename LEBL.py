@@ -62,7 +62,7 @@ def LoadAirlines(terminal, t_name):
 # Primer agafem el codi de l'aeroport i el nombre de terminals totals. Després, amb bucles aniuats,
 # anem llegint cada terminal, creem les seves àrees d'embarcament i en generem les portes
 # cridant a 'SetGates'. Al final ens retorna tot l'arbre d'objectes connectat.
-def LoadAirportStrugecture(filename):
+def LoadAirportStructure(filename):
 
     if not os.path.exists(filename):
         return -1

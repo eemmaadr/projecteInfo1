@@ -6,7 +6,7 @@ import aircraft as ac
 from aircraft import LoadDepartures, MergeMovements, NightAircraft, PlotAverageStayTime
 import matplotlib.pyplot as plt
 import LEBL
-from LEBL import PlotGateOccupancy, AssignGate, PercentatgeDOcupacio, AssignGatesAtTime, PlotCongestionRisk, CountDeparturesBefore
+from LEBL import PlotGateOccupancy, AssignGate, PercentatgeDOcupacio, AssignGatesAtTime, PlotCongestionRisk,LoadAirportStructure
 import copy
 
 class AirportApp:
@@ -75,15 +75,6 @@ class AirportApp:
         tk.Button(frame3, text="Assignar Portes a Arribades", command=self.assign_gates_v3, font=BTN_FONT).pack( fill='x', pady=2)
         tk.Button(frame3, text="Mapa d'Ocupació de Portes", command=self.show_map, font=BTN_FONT).pack(fill='x', pady=2)
 
-        # Elements de la interfície (Widgets)
-        # Això va dins del teu __init__ on es munta la interfície:
-        self.hor_var = tk.StringVar(value="00:00")
-
-        tk.Entry(frame3, textvariable=self.hor_var, justify='center', font=("Segoe UI", 10)).pack(fill='x', pady=5)
-
-        tk.Button(frame3, text="Assignar Portes a l'Hora Triada", command=self.assignar_v4, bg="#E3F2FD").pack(fill='x',
-                                                                                                               pady=5)
-        # Arrancar el bucle de la finestra
 
         # COLUMNA DRETA
         #Versio 2
@@ -339,16 +330,7 @@ class AirportApp:
 
         # Funció interna que s'executarà quan es premi el botó
 
-    def assignar_v4(self):
-        hora_usuari = self.hora_var.get().strip()
 
-        # Probamos con vols_totals
-        resultat = CountDeparturesBefore(self.vols_totals, hora_usuari)
-
-        if resultat == -1:
-            tk.messagebox.showerror("Error de Format", "introdueix una hora vàlida (HH:MM)")
-        else:
-            tk.messagebox.showinfo("Resultat", f"Vols amb sortida prevista abans de les {hora_usuari}: {resultat}")
 if __name__ == "__main__":
     app_root = tk.Tk()
     AirportApp(app_root)
